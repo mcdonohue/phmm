@@ -1,0 +1,19 @@
+\name{plot.phmm}
+\alias{plot.phmm}
+\title{Plots the convergence of MCMC-EM estimates from a PHMM}
+\description{
+Plots the value of each parameter of the model at each iteration of the MCMC-EM algorithm. For more on MCMC-EM convergence see Booth \& Hobart (1999).
+}
+\usage{
+\method{plot}{phmm}(x, ...)
+}
+\arguments{
+  \item{x}{\code{phmm} object return by \code{\link[phmm]{phmm}}}
+  \item{...}{other arguments passed to \code{\link[lattice]{xyplot}}}
+}
+\references{
+Booth JG \& Hobert JP. Maximizing generalized linear mixed model likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the Royal Statistical Society}, Series B 1999; 61:265-285.
+}
+\seealso{
+\code{\link[phmm]{phmm}}.}
+\keyword{survival}
