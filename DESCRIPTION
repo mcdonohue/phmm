@@ -1,5 +1,5 @@
 Package: phmm
-Version: 0.7-4
+Version: 0.7-5
 Date: 2012-04-02
 Title: Proportional Hazards Mixed-effects Model (PHMM)
 Authors@R: c(person("Michael", "Donohue", role = c("aut", "cre"),

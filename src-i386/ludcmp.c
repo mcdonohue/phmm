@@ -3,19 +3,19 @@
 #include <R.h>
 #define TINY 1.0e-20;
 
-void myludcmp(double **a, int n, int *indx, double *d)
+void ludcmp(float **a, int n, int *indx, float *d)
 {
 	int i,imax,j,k;
-	double big,dum,sum,temp;
-	double *vv;
+	float big,dum,sum,temp;
+	float *vv;
 
-	vv=(double *)R_alloc(n,sizeof(double));
+	vv=(float *)R_alloc(n,sizeof(float));
 	*d=1.0;
 	for (i=1;i<=n;i++) {
 		big=0.0;
 		for (j=1;j<=n;j++)
 			if ((temp=fabs(a[i][j])) > big) big=temp;
-		if (big == 0.0) error("Singular matrix in routine myludcmp");
+		if (big == 0.0) error("Singular matrix in routine ludcmp");
 		vv[i]=1.0/big;
 	}
 	for (j=1;j<=n;j++) {
@@ -54,3 +54,4 @@ void myludcmp(double **a, int n, int *indx, double *d)
 }
 #undef TINY
 #undef NRANSI
+/* (C) Copr. 1986-92 Numerical Recipes Software 'i9. */

@@ -4,7 +4,7 @@ importFrom(survival, Surv)
 importFrom(stats, AIC)
 import(Matrix)
 
-export(phmm, loglik.cond, linear.predictors, 
+export(phmm, phmm2, loglik.cond, linear.predictors, 
        pseudoPoisPHMM, traceHat, 
        cAIC, phmm.cond.loglik)
 
