@@ -1,3 +1,119 @@
+#' Proportional Hazards Model with Mixed Effects
+#' 
+#' Fits a proportional hazards regression model incorporating random effects.
+#' The function implements an EM algorithm using Markov Chain Monte Carlo
+#' (MCMC) at the E-step as described in Vaida and Xu (2000).
+#' 
+#' The proportional hazards model with mixed effects is equipped to handle
+#' clustered survival data. The model generalizes the usual frailty model by
+#' allowing log-linearl multivariate random effects. The software can only
+#' handle random effects from a multivariate normal distribution. Maximum
+#' likelihood estimates of the regression parameters and variance components is
+#' gotten by EM algorithm, with Markov chain Monte Carlo (MCMC) used in the
+#' E-step.
+#' 
+#' Care must be taken to ensure the MCMC-EM algorithm has converged, as the
+#' algorithm stops after MAXSTEP iterations. No convergence criteria is
+#' implemented. It is advised to plot the estimates at each iteration using the
+#' \code{\link[phmm]{plot.phmm}} method. For more on MCMC-EM convergence see
+#' Booth and Hobart (1999).
+#' 
+#' @param formula model formula for the fixed and random components of the
+#' model (as in \code{\link[lme4]{lmer}}). An intercept is implicitly included
+#' in the model by estimation of the error distribution. As a consequence
+#' \code{-1} in the model formula does not have any effect.  The left-hand side
+#' of the \code{formula} must be a \code{\link[survival]{Surv}} object.
+#' @param data optional data frame in which to interpret the variables occuring
+#' in the formulas.
+#' @param subset subset of the observations to be used in the fit.
+#' @param na.action function to be used to handle any \code{NA}s in the data.
+#' The user is discouraged to change a default value \code{na.fail}.
+#' @param Sigma initial covariance matrix for the random effects. Defaults to
+#' "identity".
+#' @param varcov constraint on \code{Sigma}. Currently only \code{"diagonal"}
+#' is supported.
+#' @param NINIT number of starting values supplied to Adaptive Rejection
+#' Metropolis Sampling (ARMS) algorithm.
+#' @param VARSTART starting value of the variances of the random effects.
+#' @param MAXSTEP number of EM iterations.
+#' @param CONVERG iteration after which Gibbs sampling size changes from Gbs to
+#' Gbsvar.
+#' @param Gbs initial Gibbs sampling size (until CONVERG iterations).
+#' @param Gbsvar Gibbs sampling size after CONVERG iterations.
+#' @param verbose Set to \code{TRUE} to print EM steps.
+#' @param maxtime maximum time in seconds, before aborting EM iterations.
+#' Defaults to 120 seconds.
+#' @param random The argument \code{random} is no longer used. Random
+#' components are are expressed in \code{formula}.
+#' @return The function produces an object of class "phmm" consisting of:
+#' @returnItem steps a matrix of estimates at each EM step;
+#' @returnItem bhat empirical Bayes estimates of expectation of random effects;
+#' @returnItem sdbhat empirical Bayes estimates of standard deviation of random
+#' effects;
+#' @returnItem coef the final parameter estimates for the fixed effects;
+#' @returnItem var the estimated variance-covariance matrix;
+#' @returnItem loglik a vector of length four with the conditional
+#' log-likelihood and marginal log-likelihood estimated by Laplace
+#' approximation, reciprocal importance sampling, and bridge sampling (only
+#' implemented for \code{nreff} < 3);
+#' @returnItem lambda the estimated baseline hazard;
+#' @returnItem Lambda the estimated cumulative baseline hazard.
+#' @seealso \code{\link[survival]{survfit}}, \code{\link[survival]{Surv}}.
+#' @references Gilks WR and Wild P. (1992) Adaptive rejection sampling for
+#' Gibbs sampling. Applied Statistics 41, pp 337-348.
+#' 
+#' Donohue, MC, Overholser, R, Xu, R, and Vaida, F (January 01, 2011).
+#' Conditional Akaike information under generalized linear and proportional
+#' hazards mixed models. \emph{Biometrika}, 98, 3, 685-700.
+#' 
+#' Vaida F and Xu R. 2000. "Proportional hazards model with random effects",
+#' \emph{Statistics in Medicine,} 19:3309-3324.
+#' 
+#' Gamst A, Donohue M, and Xu R (2009). Asymptotic properties and empirical
+#' evaluation of the NPMLE in the proportional hazards mixed-effects model.
+#' Statistica Sinica, 19, 997.
+#' 
+#' Xu R, Gamst A, Donohue M, Vaida F, and Harrington DP. 2006. Using Profile
+#' Likelihood for Semiparametric Model Selection with Application to
+#' Proportional Hazards Mixed Models. \emph{Harvard University Biostatistics
+#' Working Paper Series,} Working Paper 43.
+#' 
+#' Booth JG and Hobert JP. Maximizing generalized linear mixed model
+#' likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the
+#' Royal Statistical Society}, Series B 1999; 61:265-285.
+#' @keywords survival
+#' @examples
+#' 
+#' n <- 50      # total sample size
+#' nclust <- 5  # number of clusters
+#' clusters <- rep(1:nclust,each=n/nclust)
+#' beta0 <- c(1,2)
+#' set.seed(13)
+#' #generate phmm data set
+#' Z <- cbind(Z1=sample(0:1,n,replace=TRUE),
+#'            Z2=sample(0:1,n,replace=TRUE),
+#'            Z3=sample(0:1,n,replace=TRUE))
+#' b <- cbind(rep(rnorm(nclust),each=n/nclust),rep(rnorm(nclust),each=n/nclust))
+#' Wb <- matrix(0,n,2)
+#' for( j in 1:2) Wb[,j] <- Z[,j]*b[,j]
+#' Wb <- apply(Wb,1,sum)
+#' T <- -log(runif(n,0,1))*exp(-Z[,c('Z1','Z2')]%*%beta0-Wb)
+#' C <- runif(n,0,1)
+#' time <- ifelse(T<C,T,C)
+#' event <- ifelse(T<=C,1,0)
+#' mean(event)
+#' phmmd <- data.frame(Z)
+#' phmmd$cluster <- clusters
+#' phmmd$time <- time
+#' phmmd$event <- event
+#' 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
+#'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
+#' summary(fit.phmm)
+#' plot(fit.phmm)
+#' 
+#' @export phmm
 phmm <- function (formula, data, subset, 
 	na.action = na.fail, Sigma = "identity", varcov = "diagonal", 
 	NINIT = 10, VARSTART = 1, MAXSTEP = 100, CONVERG = 90, Gbs = 100, 
@@ -181,12 +297,41 @@ phmm <- function (formula, data, subset,
     return(fit)
 }
 
+#' PHMM conditional log-likelihood
+#' 
+#' Function for computing log-likelihood conditional on the estimated random
+#' effects from an object of class \code{phmm} returned by \code{phmm}.
+#' 
+#' 
+#' @param x an object of class \code{phmm}.
+#' @return The PHMM log-likelihood conditional on the estimated random effects.
+#' @seealso \code{\link{phmm}}, \code{\link{phmm.cond.loglik}}
+#' @keywords survival
 loglik.cond <- function (x) UseMethod("loglik.cond")
 loglik.cond.phmm <- function(x){
 	#Function to compute conditional log-likelihood
 	phmm.cond.loglik(time = x$Y[, 1], delta = x$Y[, 2], z = x$Z, beta = x$coef, w = x$W, b = as.matrix(x$bhat.long))
 }
 
+#' PHMM conditional log-likelihood
+#' 
+#' Function for computing log-likelihood conditional on the estimated random
+#' effects from the data and specified parameter estimates of a PHMM.
+#' 
+#' 
+#' @param time Follow-up time (right censored data).
+#' @param delta The status indicator (0=alive, 1=dead; or \code{TRUE}=dead,
+#' \code{FALSE}=alive).
+#' @param z Numeric matrix (\code{N}x\code{nfixed}) of covariates for fixed
+#' effects.
+#' @param beta Fitted fixed effects coefficients (\code{p}-vector).
+#' @param w Numeric matrix (\code{N}x\code{nrandom}) of covariates for random
+#' effects.
+#' @param b Numeric matrix (\code{N}x\code{nrandom}) of random effects
+#' estimates.
+#' @return The PHMM log-likelihood conditional on the estimated random effects.
+#' @seealso \code{\link{phmm}}, \code{\link{loglik.cond}}
+#' @keywords survival
 phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 	#Function to compute conditional log-likelihood
     z <- as.matrix(z)
@@ -204,6 +349,84 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
     sum(ifelse(delta, 1, 0)*log(numerator/denominator))
 }
 
+
+#' Akaike Information Criterion for PHMM
+#' 
+#' Function calculating the Akaike information criterion for PHMM fitted model
+#' objects, according to the formula \eqn{-2*log-likelihood +
+#' k*rho}{-2*log-likelihood + k*npar}, where \eqn{npar}{npar} represents the
+#' number of parameters in the fitted model. The function returns a list of AIC
+#' calculations corresponding different likelihood estimations: conditional and
+#' marginal likelihoods calculated by Laplace approximation, reciprocal
+#' importance sampling, and bridge sampling (only implemented for nreff < 3).
+#' The default k = 2, is for the usual AIC.
+#' 
+#' 
+#' @aliases AIC.phmm
+#' @param object a fitted PHMM model object of class \code{phmm},
+#' @param ... optionally more fitted model objects.
+#' @param k numeric, the penalty per parameter to be used; the default k = 2 is
+#' the classical AIC.
+#' @return Returns a list of AIC values corresonding to all available
+#' log-likelihood values from the fit. See \code{\link{phmm}} for details of
+#' the log-likelihood values.
+#' @seealso \code{\link{phmm}}, \code{\link[stats]{AIC}}
+#' @references Whitehead, J. (1980). Fitting Cox's Regression Model to Survival
+#' Data using GLIM. Journal of the Royal Statistical Society. Series C, Applied
+#' statistics, 29(3), 268-.
+#' @keywords survival
+#' @examples
+#' 
+#' n <- 50      # total sample size
+#' nclust <- 5  # number of clusters
+#' clusters <- rep(1:nclust,each=n/nclust)
+#' beta0 <- c(1,2)
+#' set.seed(13)
+#' #generate phmm data set
+#' Z <- cbind(Z1=sample(0:1,n,replace=TRUE),
+#'            Z2=sample(0:1,n,replace=TRUE),
+#'            Z3=sample(0:1,n,replace=TRUE))
+#' b <- cbind(rep(rnorm(nclust),each=n/nclust),rep(rnorm(nclust),each=n/nclust))
+#' Wb <- matrix(0,n,2)
+#' for( j in 1:2) Wb[,j] <- Z[,j]*b[,j]
+#' Wb <- apply(Wb,1,sum)
+#' T <- -log(runif(n,0,1))*exp(-Z[,c('Z1','Z2')]%*%beta0-Wb)
+#' C <- runif(n,0,1)
+#' time <- ifelse(T<C,T,C)
+#' event <- ifelse(T<=C,1,0)
+#' mean(event)
+#' phmmd <- data.frame(Z)
+#' phmmd$cluster <- clusters
+#' phmmd$time <- time
+#' phmmd$event <- event
+#' 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
+#'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
+#' 
+#' # Same data can be fit with lmer,
+#' # though the correlation structures are different.
+#' poisphmmd <- pseudoPoisPHMM(fit.phmm)
+#' 
+#' library(lme4)
+#' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
+#'   (-1+w1+w2|cluster)+offset(log(N)), 
+#'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
+#' 
+#' fixef(fit.lmer)[c("z1","z2")]
+#' fit.phmm$coef
+#' 
+#' VarCorr(fit.lmer)$cluster
+#' fit.phmm$Sigma
+#' 
+#' logLik(fit.lmer)
+#' fit.phmm$loglik
+#' 
+#' traceHat(fit.phmm)
+#' 
+#' summary(fit.lmer)@AICtab
+#' AIC(fit.phmm)
+#'
 AIC.phmm <- function(object, ..., k = 2){
 	if(object$varcov == "diagonal"){ 
 		return(-2*object$loglik+k*(object$nrandom+object$nfixed))
@@ -243,6 +466,22 @@ summary.phmm <-
 	return(object)
 }
 
+
+
+#' Plots the convergence of MCMC-EM estimates from a PHMM
+#' 
+#' Plots the value of each parameter of the model at each iteration of the
+#' MCMC-EM algorithm. For more on MCMC-EM convergence see Booth \& Hobart
+#' (1999).
+#' 
+#' 
+#' @param x \code{phmm} object return by \code{\link[phmm]{phmm}}
+#' @param ... other arguments passed to \code{\link[lattice]{xyplot}}
+#' @seealso \code{\link[phmm]{phmm}}.
+#' @references Booth JG \& Hobert JP. Maximizing generalized linear mixed model
+#' likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the
+#' Royal Statistical Society}, Series B 1999; 61:265-285.
+#' @keywords survival
 plot.phmm <-
  function(x, ...)
 {

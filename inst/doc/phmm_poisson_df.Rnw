@@ -175,7 +175,7 @@ fit.lmer <- lmer(m~-1+t+z1+z2+
   (z1+z2|cluster)+offset(log(N)), 
   data=ppd, family=poisson)
 
-summary(fit.lmer)@coefs
+summary(fit.lmer)$coef
 fit.phmm$coef
 logLik(fit.lmer)
 

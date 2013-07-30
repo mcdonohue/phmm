@@ -1,28 +1,37 @@
-\name{ AIC}
-\alias{ AIC.phmm}
-\title{
-Akaike Information Criterion for PHMM
-}
-\description{
-Function calculating the Akaike information criterion for PHMM fitted model objects, according to the formula \eqn{-2*log-likelihood + k*rho}{-2*log-likelihood + k*npar}, where \eqn{npar}{npar} represents the number of parameters in the fitted model. The function returns a list of AIC calculations corresponding different likelihood estimations: conditional and marginal likelihoods calculated by Laplace approximation, reciprocal importance sampling, and bridge sampling (only implemented for nreff < 3). The default k = 2, is for the usual AIC.}
+\name{AIC.phmm}
+\alias{AIC.phmm}
+\title{Akaike Information Criterion for PHMM}
 \usage{
- \method{AIC}{phmm}(object, ..., k = 2)
+  \method{AIC}{phmm}(object, ..., k = 2)
 }
 \arguments{
-\item{object}{a fitted PHMM model object of class \code{phmm},}
-\item{...}{optionally more fitted model objects.}
-\item{k}{numeric, the penalty per parameter to be used; the default k = 2 is the classical AIC.}
+  \item{object}{a fitted PHMM model object of class
+  \code{phmm},}
+
+  \item{...}{optionally more fitted model objects.}
+
+  \item{k}{numeric, the penalty per parameter to be used;
+  the default k = 2 is the classical AIC.}
 }
 \value{
-Returns a list of AIC values corresonding to all available log-likelihood values from the fit. See \code{\link{phmm}} for details of the log-likelihood values.
+  Returns a list of AIC values corresonding to all
+  available log-likelihood values from the fit. See
+  \code{\link{phmm}} for details of the log-likelihood
+  values.
 }
-
-\references{
-Whitehead, J. (1980). Fitting Cox's Regression Model to Survival Data using GLIM. Journal of the Royal Statistical Society. Series C, Applied statistics, 29(3), 268-.
+\description{
+  Function calculating the Akaike information criterion for
+  PHMM fitted model objects, according to the formula
+  \eqn{-2*log-likelihood + k*rho}{-2*log-likelihood +
+  k*npar}, where \eqn{npar}{npar} represents the number of
+  parameters in the fitted model. The function returns a
+  list of AIC calculations corresponding different
+  likelihood estimations: conditional and marginal
+  likelihoods calculated by Laplace approximation,
+  reciprocal importance sampling, and bridge sampling (only
+  implemented for nreff < 3). The default k = 2, is for the
+  usual AIC.
 }
-
-\seealso{\code{\link{phmm}}, \code{\link[stats]{AIC}}}
-
 \examples{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
@@ -47,7 +56,7 @@ phmmd$cluster <- clusters
 phmmd$time <- time
 phmmd$event <- event
 
-fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 
@@ -57,7 +66,7 @@ poisphmmd <- pseudoPoisPHMM(fit.phmm)
 
 library(lme4)
 fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
-  (-1+w1+w2|cluster)+offset(log(N)), 
+  (-1+w1+w2|cluster)+offset(log(N)),
   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
 
 fixef(fit.lmer)[c("z1","z2")]
@@ -71,7 +80,16 @@ fit.phmm$loglik
 
 traceHat(fit.phmm)
 
-summary(fit.lmer)@AICtab
-AIC(fit.phmm)
+summary(fit.lmer)
+}
+\references{
+  Whitehead, J. (1980). Fitting Cox's Regression Model to
+  Survival Data using GLIM. Journal of the Royal
+  Statistical Society. Series C, Applied statistics, 29(3),
+  268-.
+}
+\seealso{
+  \code{\link{phmm}}, \code{\link[stats]{AIC}}
 }
 \keyword{survival}
+

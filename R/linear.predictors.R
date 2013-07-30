@@ -1,3 +1,14 @@
+#' PHMM Design
+#' 
+#' Internal function for extracting the linear predictors of the PHMM model
+#' from an object of class \code{phmm} returned by \code{phmm}.
+#' 
+#' 
+#' @param x an object of class \code{phmm}.
+#' @return A vector of estimates from call to \code{phmm} of
+#' \eqn{\beta'x_{ij}+w_{ij}'b_{i}}{beta'x[ij]+w[ij]'b[i]}.
+#' @seealso \code{\link{phmm}}
+#' @keywords survival
 linear.predictors <- function (x) UseMethod("linear.predictors")
 linear.predictors.phmm <- function(x){
     #Function to compute linear predictors

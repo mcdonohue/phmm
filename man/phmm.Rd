@@ -1,73 +1,91 @@
 \name{phmm}
 \alias{phmm}
 \title{Proportional Hazards Model with Mixed Effects}
-\description{
-Fits a proportional hazards regression model incorporating random effects.
-The function implements an EM algorithm using Markov Chain Monte Carlo (MCMC) at the E-step as described in Vaida and Xu (2000).
-}
 \usage{
-phmm(formula, data, subset, na.action = na.fail, 
-  Sigma = "identity", varcov = "diagonal", NINIT = 10, 
-  VARSTART = 1, MAXSTEP = 100, CONVERG = 90, Gbs = 100, 
-  Gbsvar = 1000, verbose = FALSE, maxtime = 120, random)
+  phmm(formula, data, subset, na.action = na.fail,
+    Sigma = "identity", varcov = "diagonal", NINIT = 10,
+    VARSTART = 1, MAXSTEP = 100, CONVERG = 90, Gbs = 100,
+    Gbsvar = 1000, verbose = FALSE, maxtime = 120, random)
 }
 \arguments{
-  \item{formula}{model formula for the fixed and random components of the model
-    (as in \code{\link[lme4]{lmer}}). An intercept is implicitly
-    included in the model by estimation of the error distribution. As a
-    consequence \code{-1} in the model formula does not have any effect. 
-    The left-hand side of the \code{formula} must be a
-    \code{\link[survival]{Surv}} object.}
-  \item{data}{optional data frame in which to interpret the variables
-    occuring in the formulas.}
-  \item{subset}{subset of the observations to be used in the fit.}
-  \item{na.action}{function to be used to handle any \code{NA}s in the
-    data. The user is discouraged to change a default value
-    \code{na.fail}.}
-  \item{Sigma}{initial covariance matrix for the random effects. Defaults to
-  "identity".}
-  \item{varcov}{constraint on \code{Sigma}. Currently only \code{"diagonal"} is supported.}
-  \item{NINIT}{number of starting values supplied to Adaptive Rejection Metropolis Sampling (ARMS) algorithm.}
-  \item{VARSTART}{starting value of the variances of the random effects.}
+  \item{formula}{model formula for the fixed and random
+  components of the model (as in \code{\link[lme4]{lmer}}).
+  An intercept is implicitly included in the model by
+  estimation of the error distribution. As a consequence
+  \code{-1} in the model formula does not have any effect.
+  The left-hand side of the \code{formula} must be a
+  \code{\link[survival]{Surv}} object.}
+
+  \item{data}{optional data frame in which to interpret the
+  variables occuring in the formulas.}
+
+  \item{subset}{subset of the observations to be used in
+  the fit.}
+
+  \item{na.action}{function to be used to handle any
+  \code{NA}s in the data. The user is discouraged to change
+  a default value \code{na.fail}.}
+
+  \item{Sigma}{initial covariance matrix for the random
+  effects. Defaults to "identity".}
+
+  \item{varcov}{constraint on \code{Sigma}. Currently only
+  \code{"diagonal"} is supported.}
+
+  \item{NINIT}{number of starting values supplied to
+  Adaptive Rejection Metropolis Sampling (ARMS) algorithm.}
+
+  \item{VARSTART}{starting value of the variances of the
+  random effects.}
+
   \item{MAXSTEP}{number of EM iterations.}
-  \item{CONVERG}{iteration after which Gibbs sampling size changes from Gbs to Gbsvar.}
-  \item{Gbs}{initial Gibbs sampling size (until CONVERG iterations).}
-  \item{Gbsvar}{Gibbs sampling size after CONVERG iterations.}
+
+  \item{CONVERG}{iteration after which Gibbs sampling size
+  changes from Gbs to Gbsvar.}
+
+  \item{Gbs}{initial Gibbs sampling size (until CONVERG
+  iterations).}
+
+  \item{Gbsvar}{Gibbs sampling size after CONVERG
+  iterations.}
+
   \item{verbose}{Set to \code{TRUE} to print EM steps.}
-  \item{maxtime}{maximum time in seconds, before aborting EM iterations. Defaults to 120 seconds.}
-  \item{random}{The argument \code{random} is no longer used. Random components are
-    are expressed in \code{formula}.}
+
+  \item{maxtime}{maximum time in seconds, before aborting
+  EM iterations. Defaults to 120 seconds.}
+
+  \item{random}{The argument \code{random} is no longer
+  used. Random components are are expressed in
+  \code{formula}.}
 }
 \value{
-The function produces an object of class "phmm" consisting of: \item{steps}{ a matrix of estimates at each EM step;}
-\item{bhat}{ empirical Bayes estimates of expectation of random effects;}
-\item{sdbhat}{ empirical Bayes estimates of standard deviation of random effects;}
-\item{coef}{ the final parameter estimates for the fixed effects;}
-\item{var}{ the estimated variance-covariance matrix;}
-\item{loglik}{ a vector of length four with the conditional log-likelihood and marginal log-likelihood estimated by Laplace approximation, reciprocal importance sampling, and bridge sampling (only implemented for \code{nreff} < 3);}
-\item{lambda}{ the estimated baseline hazard;}
-\item{Lambda}{ the estimated cumulative baseline hazard.}
+  The function produces an object of class "phmm"
+  consisting of:
+}
+\description{
+  Fits a proportional hazards regression model
+  incorporating random effects. The function implements an
+  EM algorithm using Markov Chain Monte Carlo (MCMC) at the
+  E-step as described in Vaida and Xu (2000).
 }
 \details{
-The proportional hazards model with mixed effects is equipped to handle clustered survival data. The model generalizes the usual frailty model by allowing log-linearl multivariate random effects. The software can only handle random effects from a multivariate normal distribution. Maximum likelihood estimates of the regression parameters and variance components is gotten by EM algorithm, with Markov chain Monte Carlo (MCMC) used in the E-step.
+  The proportional hazards model with mixed effects is
+  equipped to handle clustered survival data. The model
+  generalizes the usual frailty model by allowing
+  log-linearl multivariate random effects. The software can
+  only handle random effects from a multivariate normal
+  distribution. Maximum likelihood estimates of the
+  regression parameters and variance components is gotten
+  by EM algorithm, with Markov chain Monte Carlo (MCMC)
+  used in the E-step.
 
-Care must be taken to ensure the MCMC-EM algorithm has converged, as the algorithm stops after MAXSTEP iterations. No convergence criteria is implemented. It is advised to plot the estimates at each iteration using the \code{\link[phmm]{plot.phmm}} method. For more on MCMC-EM convergence see Booth and Hobart (1999).
+  Care must be taken to ensure the MCMC-EM algorithm has
+  converged, as the algorithm stops after MAXSTEP
+  iterations. No convergence criteria is implemented. It is
+  advised to plot the estimates at each iteration using the
+  \code{\link[phmm]{plot.phmm}} method. For more on MCMC-EM
+  convergence see Booth and Hobart (1999).
 }
-
-\references{Gilks WR and Wild P. (1992) Adaptive rejection sampling for Gibbs sampling. Applied Statistics 41, pp 337-348.
-
-Donohue, MC, Overholser, R, Xu, R, and Vaida, F (January 01, 2011). Conditional Akaike information under generalized linear and proportional hazards mixed models. \emph{Biometrika}, 98, 3, 685-700.
-
-Vaida F and Xu R. 2000. "Proportional hazards model with random effects", \emph{Statistics in Medicine,} 19:3309-3324.
-
-Gamst A, Donohue M, and Xu R (2009). Asymptotic properties and empirical evaluation of the NPMLE in the proportional hazards mixed-effects model. Statistica Sinica, 19, 997.
-
-Xu R, Gamst A, Donohue M, Vaida F, and Harrington DP. 2006. Using Profile Likelihood for Semiparametric Model Selection with Application to Proportional Hazards Mixed Models. \emph{Harvard University Biostatistics Working Paper Series,} Working Paper 43.
-
-Booth JG and Hobert JP. Maximizing generalized linear mixed model likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the Royal Statistical Society}, Series B 1999; 61:265-285.
-}
-\seealso{
-\code{\link[survival]{survfit}}, \code{\link[survival]{Surv}}.}
 \examples{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
@@ -92,10 +110,44 @@ phmmd$cluster <- clusters
 phmmd$time <- time
 phmmd$event <- event
 
-fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 summary(fit.phmm)
 plot(fit.phmm)
 }
+\references{
+  Gilks WR and Wild P. (1992) Adaptive rejection sampling
+  for Gibbs sampling. Applied Statistics 41, pp 337-348.
+
+  Donohue, MC, Overholser, R, Xu, R, and Vaida, F (January
+  01, 2011). Conditional Akaike information under
+  generalized linear and proportional hazards mixed models.
+  \emph{Biometrika}, 98, 3, 685-700.
+
+  Vaida F and Xu R. 2000. "Proportional hazards model with
+  random effects", \emph{Statistics in Medicine,}
+  19:3309-3324.
+
+  Gamst A, Donohue M, and Xu R (2009). Asymptotic
+  properties and empirical evaluation of the NPMLE in the
+  proportional hazards mixed-effects model. Statistica
+  Sinica, 19, 997.
+
+  Xu R, Gamst A, Donohue M, Vaida F, and Harrington DP.
+  2006. Using Profile Likelihood for Semiparametric Model
+  Selection with Application to Proportional Hazards Mixed
+  Models. \emph{Harvard University Biostatistics Working
+  Paper Series,} Working Paper 43.
+
+  Booth JG and Hobert JP. Maximizing generalized linear
+  mixed model likelihoods with an automated Monte Carlo EM
+  algorithm. \emph{Journal of the Royal Statistical
+  Society}, Series B 1999; 61:265-285.
+}
+\seealso{
+  \code{\link[survival]{survfit}},
+  \code{\link[survival]{Surv}}.
+}
 \keyword{survival}
+
