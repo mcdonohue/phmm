@@ -8,22 +8,13 @@
 #' 
 #' @param x an object of class \code{phmm}.
 #' @return A \code{data.frame} with columns:
-#' @returnItem time the event time;
-#' @returnItem N the number at risk at time \code{time};
-#' @returnItem m the number at risk (in the same cluster with same covariates)
-#' at time \code{time};
-#' @returnItem cluster the integer cluster indicator;
-#' @returnItem N the number at risk at time \code{time};
-#' @returnItem fixedeffectscovariates denoted \code{z1}, \code{z2}, etc.;
-#' @returnItem randomeffectscovariates denoted \code{w1}, \code{w2}, etc.;
-#' @returnItem linear.predictors the linear predictors from the \code{phmm} fit
-#' (excluding the cumulative hazard estimates.
 #' @seealso \code{\link{phmm}}, \code{\link{traceHat}}
 #' @references Whitehead, J. (1980). Fitting Cox's Regression Model to Survival
 #' Data using GLIM. Journal of the Royal Statistical Society. Series C, Applied
-#' statistics, 29(3). 268-.
+#' statistics, 29(3).  268-.
 #' @keywords survival
 #' @examples
+#' 
 #' \dontrun{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
@@ -48,7 +39,7 @@
 #' phmmd$time <- time
 #' phmmd$event <- event
 #' 
-#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
@@ -58,7 +49,7 @@
 #' 
 #' library(lme4)
 #' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
-#'   (-1+w1+w2|cluster)+offset(log(N)), 
+#'   (-1+w1+w2|cluster)+offset(log(N)),
 #'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
@@ -72,7 +63,11 @@
 #' 
 #' traceHat(fit.phmm)
 #' }
+#' 
+#' @export
 pseudoPoisPHMM <- function (x) UseMethod("pseudoPoisPHMM")
+
+#' @export
 pseudoPoisPHMM.phmm <- function(x){	
 	dd <- cBind(x$cluster, x$Z, x$W)
 	group <- apply(dd,1,paste,collapse="XX")
@@ -111,6 +106,7 @@ pseudoPoisPHMM.phmm <- function(x){
 	return(ddext)
 }
 
+#' @export
 pseudoPoisPHMM.coxph <- function(x){	
 	group <- apply(x$x,1,paste,collapse="XX")
 	groups <- unique(group)

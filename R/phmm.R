@@ -19,7 +19,7 @@
 #' Booth and Hobart (1999).
 #' 
 #' @param formula model formula for the fixed and random components of the
-#' model (as in \code{\link[lme4]{lmer}}). An intercept is implicitly included
+#' model (as in \code{\link[lme4]{lmer}}).  An intercept is implicitly included
 #' in the model by estimation of the error distribution. As a consequence
 #' \code{-1} in the model formula does not have any effect.  The left-hand side
 #' of the \code{formula} must be a \code{\link[survival]{Surv}} object.
@@ -46,25 +46,13 @@
 #' @param random The argument \code{random} is no longer used. Random
 #' components are are expressed in \code{formula}.
 #' @return The function produces an object of class "phmm" consisting of:
-#' @returnItem steps a matrix of estimates at each EM step;
-#' @returnItem bhat empirical Bayes estimates of expectation of random effects;
-#' @returnItem sdbhat empirical Bayes estimates of standard deviation of random
-#' effects;
-#' @returnItem coef the final parameter estimates for the fixed effects;
-#' @returnItem var the estimated variance-covariance matrix;
-#' @returnItem loglik a vector of length four with the conditional
-#' log-likelihood and marginal log-likelihood estimated by Laplace
-#' approximation, reciprocal importance sampling, and bridge sampling (only
-#' implemented for \code{nreff} < 3);
-#' @returnItem lambda the estimated baseline hazard;
-#' @returnItem Lambda the estimated cumulative baseline hazard.
 #' @seealso \code{\link[survival]{survfit}}, \code{\link[survival]{Surv}}.
 #' @references Gilks WR and Wild P. (1992) Adaptive rejection sampling for
 #' Gibbs sampling. Applied Statistics 41, pp 337-348.
 #' 
 #' Donohue, MC, Overholser, R, Xu, R, and Vaida, F (January 01, 2011).
 #' Conditional Akaike information under generalized linear and proportional
-#' hazards mixed models. \emph{Biometrika}, 98, 3, 685-700.
+#' hazards mixed models.  \emph{Biometrika}, 98, 3, 685-700.
 #' 
 #' Vaida F and Xu R. 2000. "Proportional hazards model with random effects",
 #' \emph{Statistics in Medicine,} 19:3309-3324.
@@ -73,7 +61,7 @@
 #' evaluation of the NPMLE in the proportional hazards mixed-effects model.
 #' Statistica Sinica, 19, 997.
 #' 
-#' Xu R, Gamst A, Donohue M, Vaida F, and Harrington DP. 2006. Using Profile
+#' Xu R, Gamst A, Donohue M, Vaida F, and Harrington DP.  2006. Using Profile
 #' Likelihood for Semiparametric Model Selection with Application to
 #' Proportional Hazards Mixed Models. \emph{Harvard University Biostatistics
 #' Working Paper Series,} Working Paper 43.
@@ -107,13 +95,14 @@
 #' phmmd$time <- time
 #' phmmd$event <- event
 #' 
-#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' summary(fit.phmm)
 #' plot(fit.phmm)
 #' 
-#' @export phmm
+#' @importFrom survival coxph Surv basehaz
+#' @export
 phmm <- function (formula, data, subset, 
 	na.action = na.fail, Sigma = "identity", varcov = "diagonal", 
 	NINIT = 10, VARSTART = 1, MAXSTEP = 100, CONVERG = 90, Gbs = 100, 
@@ -297,6 +286,10 @@ phmm <- function (formula, data, subset,
     return(fit)
 }
 
+
+
+
+
 #' PHMM conditional log-likelihood
 #' 
 #' Function for computing log-likelihood conditional on the estimated random
@@ -307,11 +300,19 @@ phmm <- function (formula, data, subset,
 #' @return The PHMM log-likelihood conditional on the estimated random effects.
 #' @seealso \code{\link{phmm}}, \code{\link{phmm.cond.loglik}}
 #' @keywords survival
+#' @export
 loglik.cond <- function (x) UseMethod("loglik.cond")
+
+#' @method loglik.cond phmm
+#' @export
 loglik.cond.phmm <- function(x){
 	#Function to compute conditional log-likelihood
 	phmm.cond.loglik(time = x$Y[, 1], delta = x$Y[, 2], z = x$Z, beta = x$coef, w = x$W, b = as.matrix(x$bhat.long))
 }
+
+
+
+
 
 #' PHMM conditional log-likelihood
 #' 
@@ -332,6 +333,7 @@ loglik.cond.phmm <- function(x){
 #' @return The PHMM log-likelihood conditional on the estimated random effects.
 #' @seealso \code{\link{phmm}}, \code{\link{loglik.cond}}
 #' @keywords survival
+#' @export
 phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 	#Function to compute conditional log-likelihood
     z <- as.matrix(z)
@@ -350,6 +352,10 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 }
 
 
+
+
+
+
 #' Akaike Information Criterion for PHMM
 #' 
 #' Function calculating the Akaike information criterion for PHMM fitted model
@@ -362,8 +368,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' The default k = 2, is for the usual AIC.
 #' 
 #' 
-#' @aliases AIC.phmm
-#' @param object a fitted PHMM model object of class \code{phmm},
+#' @param object an object of class \code{phmm}.
 #' @param ... optionally more fitted model objects.
 #' @param k numeric, the penalty per parameter to be used; the default k = 2 is
 #' the classical AIC.
@@ -400,7 +405,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' phmmd$time <- time
 #' phmmd$event <- event
 #' 
-#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
@@ -410,7 +415,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' 
 #' library(lme4)
 #' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
-#'   (-1+w1+w2|cluster)+offset(log(N)), 
+#'   (-1+w1+w2|cluster)+offset(log(N)),
 #'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
@@ -424,9 +429,10 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' 
 #' traceHat(fit.phmm)
 #' 
-#' summary(fit.lmer)@AICtab
-#' AIC(fit.phmm)
-#'
+#' summary(fit.lmer)
+#' 
+#' @method AIC phmm
+#' @export
 AIC.phmm <- function(object, ..., k = 2){
 	if(object$varcov == "diagonal"){ 
 		return(-2*object$loglik+k*(object$nrandom+object$nfixed))
@@ -434,6 +440,8 @@ AIC.phmm <- function(object, ..., k = 2){
 		object$varcov))}
 }
 	
+#' @method print phmm
+#' @export
 print.phmm <-
  function(x, digits = max(3, getOption("digits") - 3), ...)
 {
@@ -455,8 +463,18 @@ print.phmm <-
   cat("\n\n")
 }
 
+#' @method print summary.phmm
+#' @export
 print.summary.phmm <- print.phmm
 
+#' Summarizing phmm model fits
+#' 
+#' \code{summary} method for class \code{"phmm"}.
+#' 
+#' @param object an object of class \code{phmm}.
+#' @param ... not used.
+#' @method summary phmm
+#' @export summary.phmm
 summary.phmm <-
  function(object, ...)
 {
@@ -465,8 +483,6 @@ summary.phmm <-
 	class(object)<-"summary.phmm"
 	return(object)
 }
-
-
 
 #' Plots the convergence of MCMC-EM estimates from a PHMM
 #' 
@@ -482,6 +498,9 @@ summary.phmm <-
 #' likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the
 #' Royal Statistical Society}, Series B 1999; 61:265-285.
 #' @keywords survival
+#' @importFrom lattice xyplot
+#' @method plot phmm
+#' @export
 plot.phmm <-
  function(x, ...)
 {

@@ -9,7 +9,11 @@
 #' \eqn{\beta'x_{ij}+w_{ij}'b_{i}}{beta'x[ij]+w[ij]'b[i]}.
 #' @seealso \code{\link{phmm}}
 #' @keywords survival
+#' @export
 linear.predictors <- function (x) UseMethod("linear.predictors")
+
+#' @method linear.predictors phmm
+#' @export
 linear.predictors.phmm <- function(x){
     #Function to compute linear predictors
     #cluster is assumed to be sorted

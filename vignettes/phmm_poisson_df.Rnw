@@ -1,29 +1,28 @@
-\documentclass[12pt]{article}
-\usepackage{Sweave,amsmath,amsfonts,bm}
-\usepackage[utf8x]{inputenc}
-%\usepackage[authoryear,round]{natbib}
-%\bibliographystyle{plainnat}
-\DefineVerbatimEnvironment{Sinput}{Verbatim}
-{formatcom={\vspace{-1ex}},fontshape=sl,
-  fontfamily=courier,fontseries=b, fontsize=\footnotesize}
-\DefineVerbatimEnvironment{Soutput}{Verbatim}
-{formatcom={\vspace{-1ex}},fontfamily=courier,fontseries=b,%
-  fontsize=\footnotesize}
+\documentclass{article}
+\usepackage{mathpazo,amsmath,amsfonts,bm}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\usepackage{url}
+\usepackage[authoryear]{natbib}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %%\VignetteIndexEntry{Poisson GLM, Cox PH, \& degrees of freedom}
-%%\VignetteDepends{phmm}
-\title{Poisson GLM, Cox PH, \& degrees of freedom}
-\author{Michael C. Donohue\\
-Division of Biostatistics and Bioinformatics\\
-University of California, San Diego}
+% \VignetteEngine{knitr::knitr}
+% \VignetteDepends{phmm}
 
-
-\addtolength{\hoffset}{-0.75in}
-\addtolength{\textwidth}{1.5in}
+\makeatother
 
 \begin{document}
-\SweaveOpts{engine=R, eps=FALSE, pdf=TRUE, strip.white=true, echo=TRUE}
-\SweaveOpts{include=FALSE}
-\setkeys{Gin}{width=\textwidth}
+
+\title{Poisson GLM, Cox PH, \& degrees of freedom}
+\author{Michael C. Donohue\\
+Alzheimer's Therapeutic Research Institute\\
+Keck School of Medicine\\
+University of Southern California}
 
 \maketitle
 
@@ -168,10 +167,10 @@ traceHat(fit.phmm, "pseudoPois") # + 2*sum(phmmd$event)
 
 \subsection{Fit auxiliary Poisson GLMM}
 We fit an auxiliary Poisson GLMM, although with a general variance-covariance matrix for the random effects (phmm() only fits models with diagonal variance-covariance matrix).
-<<>>=
+<<message = FALSE, warning = FALSE>>=
 library(lme4)
 ppd$t <- as.factor(ppd$time)
-fit.lmer <- lmer(m~-1+t+z1+z2+
+fit.lmer <- glmer(m~-1+t+z1+z2+
   (z1+z2|cluster)+offset(log(N)), 
   data=ppd, family=poisson)
 

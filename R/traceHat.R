@@ -1,3 +1,6 @@
+#' @export
+cAIC <- function(object, ..., k = 2) UseMethod("cAIC")
+
 #' Conditional Akaike Information Criterion for PHMM
 #' 
 #' Function calculating the conditional Akaike information criterion (Vaida and
@@ -10,7 +13,7 @@
 #' \eqn{rho}{rho}. The default k = 2, conforms with the usual AIC.
 #' 
 #' 
-#' @aliases cAIC cAIC.phmm cAIC.coxph
+#' @aliases cAIC cAIC.coxph cAIC.phmm
 #' @param object A fitted PHMM model object of class \code{phmm}.
 #' @param method Passed to \code{\link{traceHat}}. Options include "direct",
 #' "pseudoPois", or "HaLee". The methods "direct" and "HaLee" are algebraically
@@ -25,11 +28,11 @@
 #' 
 #' Donohue, MC, Overholser, R, Xu, R, and Vaida, F (January 01, 2011).
 #' Conditional Akaike information under generalized linear and proportional
-#' hazards mixed models. \emph{Biometrika}, 98, 3, 685-700.
+#' hazards mixed models.  \emph{Biometrika}, 98, 3, 685-700.
 #' 
 #' Breslow, NE, Clayton, DG. (1993). Approximate Inference in Generalized
 #' Linear Mixed Models. Journal of the American Statistical Association, Vol.
-#' 88, No. 421, pp. 9-25.
+#' 88, No. 421, pp.  9-25.
 #' 
 #' Whitehead, J. (1980). Fitting Cox\'s Regression Model to Survival Data using
 #' GLIM. Journal of the Royal Statistical Society. Series C, Applied
@@ -64,7 +67,7 @@
 #' phmmd$time <- time
 #' phmmd$event <- event
 #' 
-#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
@@ -74,7 +77,7 @@
 #' 
 #' library(lme4)
 #' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
-#'   (-1+w1+w2|cluster)+offset(log(N)), 
+#'   (-1+w1+w2|cluster)+offset(log(N)),
 #'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
@@ -88,21 +91,23 @@
 #' 
 #' traceHat(fit.phmm)
 #' 
-#' summary(fit.lmer)@AICtab
-#' AIC(fit.phmm)
-#' cAIC(fit.phmm)
+#' summary(fit.lmer)
 #' }
-#'
-cAIC <- function(object, ..., k = 2) UseMethod("cAIC")
-
+#' 
+#' @method cAIC phmm
+#' @export
 cAIC.phmm <- function(object, method = "direct", ..., k = 2){
   as.numeric(-2*object$loglik["Conditional"])+k*traceHat(object, method = method)
 }
 
+#' @method cAIC coxph
+#' @export
 cAIC.coxph <- function(object, ..., k = 2){
 	-2*object$loglik[2] + k*length(object$coef)
 }
 
+#' @method AIC coxph
+#' @export
 AIC.coxph <- cAIC.coxph
 
 #' Trace of the "hat" matrix from PHMM-MCEM fit
@@ -121,7 +126,7 @@ AIC.coxph <- cAIC.coxph
 #' @seealso \code{\link{phmm}}, \code{\link{AIC.phmm}}
 #' @references Breslow, NE, Clayton, DG. (1993). Approximate Inference in
 #' Generalized Linear Mixed Models. Journal of the American Statistical
-#' Association, Vol. 88, No. 421, pp. 9-25.
+#' Association, Vol. 88, No. 421, pp.  9-25.
 #' 
 #' Donohue, M, Xu, R, Vaida, F, Haut R. Model Selection for Clustered Data:
 #' Conditional Akaike Information under GLMM and PHMM. Submitted.
@@ -134,6 +139,7 @@ AIC.coxph <- cAIC.coxph
 #' statistics, 29(3), 268-.
 #' @keywords survival
 #' @examples
+#' 
 #' \dontrun{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
@@ -158,7 +164,7 @@ AIC.coxph <- cAIC.coxph
 #' phmmd$time <- time
 #' phmmd$event <- event
 #' 
-#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster), 
+#' fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
@@ -168,7 +174,7 @@ AIC.coxph <- cAIC.coxph
 #' 
 #' library(lme4)
 #' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
-#'   (-1+w1+w2|cluster)+offset(log(N)), 
+#'   (-1+w1+w2|cluster)+offset(log(N)),
 #'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
@@ -182,6 +188,10 @@ AIC.coxph <- cAIC.coxph
 #' 
 #' traceHat(fit.phmm)
 #' }
+#' 
+#' @importFrom stats as.formula coef formula model.extract model.matrix na.fail terms
+#' @importFrom Matrix cBind Matrix bdiag rBind Diagonal
+#' @export
 traceHat <- function(x, method = "direct"){ 
   if(! method %in% c("direct", "pseudoPois", "HaLee", "approx")) 
     stop("Undefined traceHat method.")
@@ -293,10 +303,10 @@ traceHat <- function(x, method = "direct"){
     D <- bdiag(rep(list(Sigma), nclust))
     W <- Diagonal(x = as.numeric(exp(fitted)))
     U <- solve(D)
-    ZWZ <- crossprod(Z, W) %*% Z
-    ZWX <- crossprod(Z, W) %*% X
-    XWX <- crossprod(X, W) %*% X
-    XWZ <- crossprod(X, W) %*% Z
+    ZWZ <- Matrix::crossprod(Z, W) %*% Z
+    ZWX <- Matrix::crossprod(Z, W) %*% X
+    XWX <- Matrix::crossprod(X, W) %*% X
+    XWZ <- Matrix::crossprod(X, W) %*% Z
 
     return(nclust * x$nrandom + x$nfixed - sum(diag(solve(ZWZ + U - ZWX %*% solve(XWX) %*% XWZ) %*% U)))
     }else return(NULL) # end pseudoPois
