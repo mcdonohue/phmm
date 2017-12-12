@@ -1,6 +1,6 @@
 Package: phmm
-Version: 0.7-6
-Date: 2015-12-03
+Version: 0.7-7
+Date: 2017-12-11
 Title: Proportional Hazards Mixed-Effects Model (PHMM)
 Authors@R: c(person(given="Michael", family="Donohue", role = c("aut", "cre"),
     email = "mdonohue@usc.edu"),
@@ -10,6 +10,7 @@ Depends:
     survival,
     lattice,
     Matrix
+VignetteBuilder: knitr
 Suggests:
     knitr,
     lme4 (>= 1.0)
@@ -23,4 +24,4 @@ Collate:
     'phmm.R'
     'pseudoPoisPHMM.R'
     'traceHat.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

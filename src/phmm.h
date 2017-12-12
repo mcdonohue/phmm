@@ -34,27 +34,6 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   double *lambda,
   double *Lambda);
 
-void phmm2(int *sii,
-  int *sNINIT, 
-  int *sGbs,
-  int *snreff,
-  int *snobs,
-  int *snclust,
-  double *salpha,
-  double *sb,
-  double *sLambexp,
-  double *sclust_start,
-  double *wwv,
-  double *av,
-  double *sSigma,
-  double *srank,
-  double *sinvSigma,
-  double *ssum,
-  double *ssumb,
-  double *ssumbb,
-  double *ssumv,
-  double *oomega);
-
 struct dens_para {  /* used in logdens() */
   int i, d, *rank, *clust_start, nreff;
 

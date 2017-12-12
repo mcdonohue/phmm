@@ -21,7 +21,7 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
   int nobs = *snobs;
   int ncov = *sncov;
   int nclust = *snclust;
-  double *alpha;
+
   double *b;
   double *Lambexp;
   double *lambda;
@@ -39,7 +39,7 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
   double **invSigma;
   double *sumb[nreff+1];
   double *sumbb[nreff+1];
-  double myxinit[nreff+1][NINIT];
+
   float betahat[ncov+1];
   double **var;
   
@@ -164,18 +164,18 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   double **zz, int *delta, int *ddelta, double *omega, double **z,
   double **var) 
 {
-  int g, i, d, j, l, ll, nfail, dd, fail[nobs+1], in;
+  int g, i, d, j, l, nfail, dd, fail[nobs+1], in;
   double ooomega[nobs+1], ebetaz[nobs+1], sum[nreff+1];
   double sbeta[ncov+1], ssigma2[nreff+1], slambda[nobs+1], ssum0, ssum1;
   double *Iobs[ncov+nreff+nobs+1];
   double l2beta[ncov+1][ncov+1], l2sigma2[nreff+1], l2lambda[nobs+1], l2blamb[ncov+1][nobs+1];
   int err, ninit = 4, dometrop = 0,  npoint = 100, ncent = 0, neval, nsamp=1;
-  double xinit[NINIT], xl, xr, xprev = 0.0, xsamp, xcent, qcent, convex = 1., temp;
+  double xl, xr, xprev = 0.0, xsamp, xcent, qcent, convex = 1., temp;
   double b[nreff+1], alpha[nobs+1], oomega[nobs+1];
   struct dens_para para;
   double myxinit[nreff+1][NINIT];
   double msbeta[ncov+1], mssigma2[nreff+1], mslambda[nobs+1];
-  double varLamb[nobs+1], sumcov;
+  double varLamb[nobs+1];
   
   for (i=1;i<=ncov+nreff+nobs;i++) { 
     Iobs[i]= (double *)R_alloc((ncov+nreff+nobs+1),sizeof(double));

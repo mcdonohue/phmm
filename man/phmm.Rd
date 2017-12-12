@@ -72,7 +72,7 @@ E-step.
 Care must be taken to ensure the MCMC-EM algorithm has converged, as the
 algorithm stops after MAXSTEP iterations. No convergence criteria is
 implemented. It is advised to plot the estimates at each iteration using the
-\code{\link[phmm]{plot.phmm}} method. For more on MCMC-EM convergence see
+\code{plot} method. For more on MCMC-EM convergence see
 Booth and Hobart (1999).
 }
 \examples{
@@ -135,4 +135,3 @@ Royal Statistical Society}, Series B 1999; 61:265-285.
 \code{\link[survival]{survfit}}, \code{\link[survival]{Surv}}.
 }
 \keyword{survival}
-

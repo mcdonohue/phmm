@@ -21,4 +21,3 @@ from an object of class \code{phmm} returned by \code{phmm}.
 \code{\link{phmm}}
 }
 \keyword{survival}
-

@@ -10,9 +10,10 @@
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%%\VignetteIndexEntry{Poisson GLM, Cox PH, \& degrees of freedom}
-% \VignetteEngine{knitr::knitr}
-% \VignetteDepends{phmm}
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Poisson GLM, Cox PH, \& degrees of freedom}
+%\usepackage[utf8]{inputenc}
+%\VignetteDepends{phmm}
 
 \makeatother
 
@@ -172,7 +173,7 @@ library(lme4)
 ppd$t <- as.factor(ppd$time)
 fit.lmer <- glmer(m~-1+t+z1+z2+
   (z1+z2|cluster)+offset(log(N)), 
-  data=ppd, family=poisson)
+  data=ppd, family=poisson, nAGQ=0)
 
 summary(fit.lmer)$coef
 fit.phmm$coef

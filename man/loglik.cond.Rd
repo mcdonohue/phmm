@@ -2,9 +2,12 @@
 % Please edit documentation in R/phmm.R
 \name{loglik.cond}
 \alias{loglik.cond}
+\alias{loglik.cond.phmm}
 \title{PHMM conditional log-likelihood}
 \usage{
 loglik.cond(x)
+
+\method{loglik.cond}{phmm}(x)
 }
 \arguments{
 \item{x}{an object of class \code{phmm}.}
@@ -20,4 +23,3 @@ effects from an object of class \code{phmm} returned by \code{phmm}.
 \code{\link{phmm}}, \code{\link{phmm.cond.loglik}}
 }
 \keyword{survival}
-

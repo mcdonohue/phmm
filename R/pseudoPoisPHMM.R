@@ -43,14 +43,14 @@
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
-#' # Same data can be fit with lmer,
+#' # Same data can be fit with glmer,
 #' # though the correlation structures are different.
 #' poisphmmd <- pseudoPoisPHMM(fit.phmm)
 #' 
 #' library(lme4)
-#' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
+#' fit.lmer <- glmer(m~-1+as.factor(time)+z1+z2+
 #'   (-1+w1+w2|cluster)+offset(log(N)),
-#'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
+#'   as.data.frame(as(poisphmmd, "matrix")), family=poisson, nAGQ=0)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
 #' fit.phmm$coef

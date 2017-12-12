@@ -34,4 +34,3 @@ effects from the data and specified parameter estimates of a PHMM.
 \code{\link{phmm}}, \code{\link{loglik.cond}}
 }
 \keyword{survival}
-

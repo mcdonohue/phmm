@@ -15,11 +15,11 @@
 #' Care must be taken to ensure the MCMC-EM algorithm has converged, as the
 #' algorithm stops after MAXSTEP iterations. No convergence criteria is
 #' implemented. It is advised to plot the estimates at each iteration using the
-#' \code{\link[phmm]{plot.phmm}} method. For more on MCMC-EM convergence see
+#' \code{plot} method. For more on MCMC-EM convergence see
 #' Booth and Hobart (1999).
 #' 
 #' @param formula model formula for the fixed and random components of the
-#' model (as in \code{\link[lme4]{lmer}}).  An intercept is implicitly included
+#' model (as in \code{\link[lme4]{glmer}}).  An intercept is implicitly included
 #' in the model by estimation of the error distribution. As a consequence
 #' \code{-1} in the model formula does not have any effect.  The left-hand side
 #' of the \code{formula} must be a \code{\link[survival]{Surv}} object.
@@ -286,10 +286,6 @@ phmm <- function (formula, data, subset,
     return(fit)
 }
 
-
-
-
-
 #' PHMM conditional log-likelihood
 #' 
 #' Function for computing log-likelihood conditional on the estimated random
@@ -303,16 +299,12 @@ phmm <- function (formula, data, subset,
 #' @export
 loglik.cond <- function (x) UseMethod("loglik.cond")
 
-#' @method loglik.cond phmm
+#' @rdname loglik.cond
 #' @export
 loglik.cond.phmm <- function(x){
 	#Function to compute conditional log-likelihood
 	phmm.cond.loglik(time = x$Y[, 1], delta = x$Y[, 2], z = x$Z, beta = x$coef, w = x$W, b = as.matrix(x$bhat.long))
 }
-
-
-
-
 
 #' PHMM conditional log-likelihood
 #' 
@@ -350,11 +342,6 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
           }))
     sum(ifelse(delta, 1, 0)*log(numerator/denominator))
 }
-
-
-
-
-
 
 #' Akaike Information Criterion for PHMM
 #' 
@@ -409,14 +396,14 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' 
-#' # Same data can be fit with lmer,
+#' # Same data can be fit with glmer,
 #' # though the correlation structures are different.
 #' poisphmmd <- pseudoPoisPHMM(fit.phmm)
 #' 
 #' library(lme4)
-#' fit.lmer <- lmer(m~-1+as.factor(time)+z1+z2+
+#' fit.lmer <- glmer(m~-1+as.factor(time)+z1+z2+
 #'   (-1+w1+w2|cluster)+offset(log(N)),
-#'   as.data.frame(as(poisphmmd, "matrix")), family=poisson)
+#'   as.data.frame(as(poisphmmd, "matrix")), family=poisson, nAGQ=0)
 #' 
 #' fixef(fit.lmer)[c("z1","z2")]
 #' fit.phmm$coef
@@ -439,8 +426,7 @@ AIC.phmm <- function(object, ..., k = 2){
 	}else{ stop(paste("\nUnknown structure specified for var-covariance matrix:", 
 		object$varcov))}
 }
-	
-#' @method print phmm
+
 #' @export
 print.phmm <-
  function(x, digits = max(3, getOption("digits") - 3), ...)
@@ -463,18 +449,10 @@ print.phmm <-
   cat("\n\n")
 }
 
-#' @method print summary.phmm
 #' @export
 print.summary.phmm <- print.phmm
 
-#' Summarizing phmm model fits
-#' 
-#' \code{summary} method for class \code{"phmm"}.
-#' 
-#' @param object an object of class \code{phmm}.
-#' @param ... not used.
-#' @method summary phmm
-#' @export summary.phmm
+#' @export
 summary.phmm <-
  function(object, ...)
 {
@@ -484,22 +462,7 @@ summary.phmm <-
 	return(object)
 }
 
-#' Plots the convergence of MCMC-EM estimates from a PHMM
-#' 
-#' Plots the value of each parameter of the model at each iteration of the
-#' MCMC-EM algorithm. For more on MCMC-EM convergence see Booth \& Hobart
-#' (1999).
-#' 
-#' 
-#' @param x \code{phmm} object return by \code{\link[phmm]{phmm}}
-#' @param ... other arguments passed to \code{\link[lattice]{xyplot}}
-#' @seealso \code{\link[phmm]{phmm}}.
-#' @references Booth JG \& Hobert JP. Maximizing generalized linear mixed model
-#' likelihoods with an automated Monte Carlo EM algorithm. \emph{Journal of the
-#' Royal Statistical Society}, Series B 1999; 61:265-285.
-#' @keywords survival
 #' @importFrom lattice xyplot
-#' @method plot phmm
 #' @export
 plot.phmm <-
  function(x, ...)

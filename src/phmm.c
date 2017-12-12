@@ -44,7 +44,7 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   double *lambda,
   double *Lambda)
 {
-  int i, j, temp, k, nclust;
+  int i, j, k, nclust;
 
   int varcov = *svarcov;
   int NINIT = *sNINIT;
@@ -68,13 +68,12 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   /* to be returned by R wrapper */
 	
   /*   EM variables */
-  double G[nreff+1][nreff+1];
   double detSigma = *sdetSigma;
   double *sum0, *sum1[ncov+1], *sum2[ncov+1][ncov+1];
   double *eb[nreff+1], *v[nreff+1], *condvar[nreff+1][nreff+1];
   double *invcondv[nreff+1][nreff+1], *detcondv;
   double *sumb[nreff+1], *sumbb[nreff+1], *sumv[nreff+1][nreff+1];
-  float betahat[ncov+1], jac[ncov+1][ncov+1];
+  float betahat[ncov+1];
 	
   xx= (double *)R_alloc((nobs+1), sizeof(double));
   Lambexp= (double *)R_alloc((nobs+1), sizeof(double));
@@ -239,7 +238,7 @@ void Clust(int nobs, int *rank, double *xx, double *x, int *ddelta, int *delta,
   /* xx, ddelta, cluster, rank, zz, ww are sorted by clusters */
 {
 	double temp1;
-	int temp2, i, j, d, k, l, flag;
+	int temp2, i, j, d, k, flag;
 	int nclust = *pnclust;
 	
 	for (i=1; i<=nobs; i++) {
@@ -312,8 +311,8 @@ void EM(int ncov, int nreff, double *Sigma[nreff+1],
   double *eb[nreff+1], double *v[nreff+1], double *condvar[nreff+1][nreff+1], 
   double detSigma, int verbose, int varcov )
 {
-	int i, j, d, dd;
-	double beta[ncov+1], temp_G[nreff+1][nreff+1], dif;
+	int i, d;
+	double dif;
 	time_t start,end;
 	
 	time (&start);
@@ -428,8 +427,8 @@ void Betahat(float *betahat, int ncov, int nobs, double *omega, double *sum0,
   double *sum1[ncov+1], double **z, int *delta, double *sum2[ncov+1][ncov+1],
   double *lambda, double *Lambda, double *Lambexp)  /* program for Cox regression */
 {
-	int i, d;
-	double a;
+	int i;
+
 	
 	/** SHOULDN'T THE OMEGAS BE INPUT HERE RATHER THAN IN Estep() ? **/
 	mnewt(ncov, 50, betahat, 0.0001*ncov, 0.0001*ncov,
@@ -450,8 +449,8 @@ double logdens(double bb, void *para)
 /* log-density for */
 {   /* the Gibbs E-step */
   struct dens_para *dpar;
-  double y, sum=0, *alpha, *b, temp=0;
-  int i, d, dd, m, l, nreff;
+  double y, sum=0, *alpha, *b;
+  int i, d, l, nreff;
   int *rank, *clust_start;
   double *Lambexp, **ww, **a, **Sigma, **invSigma;
 
@@ -485,10 +484,10 @@ void Estep(int ncov, int nreff, double *Sigma[nreff+1], int nobs, int NINIT, int
   double *v[nreff+1], double *condvar[nreff+1][nreff+1],
   double detSigma, int varcov)
 {
-	int i, j, g, l, d, in, dd;
+	int i, l, d, in, dd;
 	int err, ninit = 4, dometrop = 0,  npoint = 100, ncent = 0,
   neval, nsamp=1;
-	double xinit[NINIT], xl = -100.0, xr = 100.0, xprev = 0.0, xsamp,
+	double xl = -100.0, xr = 100.0, xprev = 0.0, xsamp,
   xcent, qcent, convex = 1., temp;
 	double b[nreff+1], sum[nreff+1], alpha[nobs+1], oomega[nobs+1];
 	struct dens_para para;
@@ -737,7 +736,7 @@ double Laplace(int nreff, int ncov, int nclust, double *condvar[nreff+1][nreff+1
   float *betahat, double **z, double *lambda, double *Lambexp)
 {
 	int i, d, dd;
-	double *vtemp[nreff+1], *vtemp1[nreff+1], temp, temp1[nreff+1];
+	double *vtemp[nreff+1], *vtemp1[nreff+1], temp1[nreff+1];
 	
 	for (d=1;d<=nreff;d++) {
   vtemp[d]= (double *)R_alloc((nreff+1),sizeof(double));
@@ -797,11 +796,11 @@ double Importance(int ncov, int nreff, double *Sigma[nreff+1],
   double import, double *pbridgeC, double *invcondv[nreff+1][nreff+1], 
   double *detcondv, double *laplace)
 {
-	int g, i, d, dd, j, l, in;
+	int g, i, d, dd, l, in;
 	double incrA, logratio, incrC, temp;
 	int err, ninit = 4, dometrop = 0,  npoint = 100, ncent = 0, neval, nsamp=1;
-	double xinit[NINIT], xl, xr, xprev = 0.0, xsamp, xcent, qcent, convex = 1.;
-	double b[nreff+1], alpha[nobs+1], oomega[nobs+1];
+	double xl, xr, xprev = 0.0, xsamp, xcent, qcent, convex = 1.;
+	double b[nreff+1], alpha[nobs+1];
 	struct dens_para para;
 	double myxinit[nreff+1][NINIT];
 	
