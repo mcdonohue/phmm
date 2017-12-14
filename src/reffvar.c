@@ -154,7 +154,7 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
     Sigma, invSigma, rank,
     zz, delta, ddelta, omega, z,
     var);
-};
+}
 
 /* Fisher's Observed Information and its Inverse */
 void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,

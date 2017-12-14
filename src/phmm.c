@@ -895,18 +895,18 @@ double Invmatrix ( double **a, int N, int M, double **y )
 /* N is size of the matrix, M is # of col's from the inverse matrix */
 {
 	double d, col[N+1];
-	int i, j, indx[N];
-	
+	int i, j, indx[N+1];
+  
 	myludcmp(a, N, indx, &d); 
 	for (j=1; j<=N; j++)   d*=a[j][j];
 	
-	for (j=1; j<=M; j++) {
-  for (i=1; i<=N; i++) col[i]=0.0;
-  col[j]=1.0;
-  mylubksb(a, N, indx, col);
+  for (j=1; j<=M; j++) {
+    for (i=1; i<=N; i++) col[i]=0.0;
+    col[j]=1.0;
+    mylubksb(a, N, indx, col);
   
-  for (i=1; i<=N; i++) y[i][j]=col[i];
-	}
+    for (i=1; i<=N; i++) y[i][j]=col[i];
+  }
 	
 	return d;
 }
