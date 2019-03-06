@@ -190,7 +190,7 @@ AIC.coxph <- cAIC.coxph
 #' }
 #' 
 #' @importFrom stats as.formula coef formula model.extract model.matrix na.fail terms
-#' @importFrom Matrix cBind Matrix bdiag rBind Diagonal
+#' @importFrom Matrix Matrix bdiag Diagonal
 #' @export
 traceHat <- function(x, method = "direct"){ 
   if(! method %in% c("direct", "pseudoPois", "HaLee", "approx")) 
@@ -213,10 +213,10 @@ traceHat <- function(x, method = "direct"){
     # fitted -- linear part
 
     fitted <- x$linear.predictors  
-    xx <- cBind(ID = 1:length(time), time = time, delta = delta)
+    xx <- cbind(ID = 1:length(time), time = time, delta = delta)
     Lambda = cumsum(x$lambda)[!duplicated(sort(time), fromLast = TRUE)]
     lambda = Lambda-c(0, Lambda[1:(length(Lambda)-1)])
-    Lambda <- cBind(Lambda = Lambda, 
+    Lambda <- cbind(Lambda = Lambda, 
             lambda = lambda, 
                     time = unique(sort(time)))
     xx <- merge(xx, Lambda, by = "time", all.x = TRUE)
@@ -247,7 +247,7 @@ traceHat <- function(x, method = "direct"){
     X <- z
     Z <- bdiag(lapply(unique(cluster), function(x){
          block <- w[cluster == x, ]
-         if(ncol(w) > 1) return(rBind(block)) else return(cBind(block))
+         if(ncol(w) > 1) return(rbind(block)) else return(cbind(block))
        }))
     D <- bdiag(rep(list(Sigma), nclust))
   
@@ -267,7 +267,7 @@ traceHat <- function(x, method = "direct"){
     if(nrow(Sigma) == 1 & Sigma[1, 1] == 0){ 
       return(sum(diag(solve(crossprod(X, W) %*% X %*% crossprod(X, W) %*% X))))
     }else if(method == "direct"){
-      U <- cBind(as.matrix(X), as.matrix(Z))
+      U <- cbind(as.matrix(X), as.matrix(Z))
       A <- Matrix(bdiag(matrix(0, x$nfixed, x$nfixed), solve(D)))
       UW <- crossprod(U, W)
       return(sum(diag(UW %*% U %*% 
@@ -277,15 +277,15 @@ traceHat <- function(x, method = "direct"){
       XW <- crossprod(X, W); ZW <- crossprod(Z, W)
       J <- if(method == "HaLee") 0 else U %*% as.vector(t(bhat)) %*% t(as.vector(t(bhat))) %*% U
       return(sum(diag(solve(
-      rBind(cBind(XW %*% X, XW %*% Z), 
-            cBind(ZW %*% X, ZW %*% Z + U))) %*% 
-      rBind(cBind(XW %*% X, XW %*% Z), 
-            cBind(ZW %*% X, ZW %*% Z + J)))))
+      rbind(cbind(XW %*% X, XW %*% Z), 
+            cbind(ZW %*% X, ZW %*% Z + U))) %*% 
+      rbind(cbind(XW %*% X, XW %*% Z), 
+            cbind(ZW %*% X, ZW %*% Z + J)))))
     }
   }else if(method == "pseudoPois"){
     xx <- pseudoPoisPHMM(x)
     
-    xx <- cBind( ID = 1:nrow(xx), xx)
+    xx <- cbind( ID = 1:nrow(xx), xx)
     xx <- xx[order(xx[, "cluster"], xx[, "ID"]), ]
     z <- xx[, c(paste("t", 1:neventtimes, sep = ''), 
                 paste("z", 1:x$nfixed, sep = ''))]

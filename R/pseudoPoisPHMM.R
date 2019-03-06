@@ -69,10 +69,10 @@ pseudoPoisPHMM <- function (x) UseMethod("pseudoPoisPHMM")
 
 #' @export
 pseudoPoisPHMM.phmm <- function(x){	
-	dd <- cBind(x$cluster, x$Z, x$W)
+	dd <- cbind(x$cluster, x$Z, x$W)
 	group <- apply(dd,1,paste,collapse="XX")
 	groups <- unique(group)
-	dd <- cBind(x$Y[, 1], x$Y[, 2], x$linear.predictors, dd)
+	dd <- cbind(x$Y[, 1], x$Y[, 2], x$linear.predictors, dd)
 	colnames(dd) <- c("time", "delta", "linear.predictors",
 		"cluster",
 		paste("z", 1:x$nfixed, sep=''),
@@ -100,7 +100,7 @@ pseudoPoisPHMM.phmm <- function(x){
 	for(i in 1:length(times) ){		
 		timematrix[ddext[,"time"]==times[i],paste("t",i,sep='')] <- 1
 	}
-	ddext <- cBind(ddext, timematrix)
+	ddext <- cbind(ddext, timematrix)
 	ddext <- ddext[ddext[,'N']!=0,]
 	ddext <- ddext[order(ddext[,'cluster']),]
 	return(ddext)
@@ -110,7 +110,7 @@ pseudoPoisPHMM.phmm <- function(x){
 pseudoPoisPHMM.coxph <- function(x){	
 	group <- apply(x$x,1,paste,collapse="XX")
 	groups <- unique(group)
-	dd <- cBind(x$y[, 1], x$y[, 2], x$x%*%x$coef, x$x)
+	dd <- cbind(x$y[, 1], x$y[, 2], x$x%*%x$coef, x$x)
 	colnames(dd) <- c("time", "delta", "linear.predictors",
 		paste("z", 1:ncol(x$x), sep=''))
 	ddext <- lapply(sort(unique(dd[dd[,"delta"]==1,"time"])), function(t){
@@ -133,11 +133,11 @@ pseudoPoisPHMM.coxph <- function(x){
 	for(i in 1:length(times) ){		
 		timematrix[ddext[,"time"]==times[i],paste("t",i,sep='')] <- 1
 	}
-	ddext <- cBind(ddext, timematrix)
+	ddext <- cbind(ddext, timematrix)
 	ddext <- ddext[ddext[,'N']!=0,]
 	# bh <- basehaz(x, centered = FALSE)
 	# lambda <- bh$hazard - c(0,bh$hazard[1:(length(bh$hazard)-1)])
 	# alpha <- log(ddext[,paste("t",1:length(times),sep='')]%*%lambda)
-	# ddext <- cBind(ddext, alpha)
+	# ddext <- cbind(ddext, alpha)
 	return(ddext)
 }
