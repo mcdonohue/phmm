@@ -131,8 +131,10 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
     }
   }
 
+  /*
   Rprintf("\n\n betahat:\n");
   for (i=0; i<=ncov; i++)  Rprintf("%.4f ", sbetahat[i]);
+  */
 
   k=0;
   for (i=1; i<=ncov; i++){
@@ -243,7 +245,8 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   //     Rprintf("\n alpha=%f ", alpha[l]);
   //   }   
   // }
-
+  
+  /*
   Rprintf("\n\n alpha:\n");
   for (i=1; i<=nobs; i++){ Rprintf("alpha=%.4f ", alpha[i]);}
   Rprintf("\n\n b:\n");
@@ -258,6 +261,7 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   for (i=1; i<=nclust; i++)  Rprintf("%.4f %.4f \n", a[1][i], a[2][i]);
   Rprintf("\n\n betahat:\n");
   for (i=1; i<=ncov; i++)  Rprintf("%.4f ", betahat[i]);
+  */
 
   /* Gibbs sampler: */
   for (g=1; g<=Gbs; g++) {  /* MCMC loop  */
