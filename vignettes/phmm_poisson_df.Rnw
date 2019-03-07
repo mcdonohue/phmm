@@ -28,7 +28,7 @@ University of Southern California}
 \maketitle
 
 \section{Introduction}
-We discuss connections between the Cox proportional hazards model and Poisson generalized linear models as described in Whitehead (1980). We fit a sample dataset using coxph() and glm() and show that the model degrees of freedom differ by the number of events.
+We discuss connections between the Cox proportional hazards model and Poisson generalized linear models as described in Whitehead (1980). We fit comparable models to a sample dataset using \texttt{coxph()}, \texttt{glm()}, \texttt{phmm()}, and \texttt{glmer()} and explore similarities.
 
 \section{A simple Cox PH example}
 \subsection{Generate data}
@@ -68,7 +68,6 @@ fit.ph <- coxph(Surv(time, event) ~ Z1 + Z2,
    phmmd, method="breslow", x=TRUE, y=TRUE)
 
 summary(fit.ph)
-fit.ph$loglik[2]
 @
 
 %# cox partial likelihood
@@ -102,13 +101,12 @@ for(h in 1:length(eventtimes)){
 @
 Poisson likelihood:
 <<>>=
-sum(log(poisl))
-
-sum(log(poisl)) - fit.ph$loglik[2]
+(coxph.pois.loglik = sum(log(poisl)))
+coxph.pois.loglik - fit.ph$loglik[2]
 @
 Poisson degrees of freedom
 <<>>=
-length(fit.ph$coef) + sum(phmmd$event)
+(coxph.pois.df = length(fit.ph$coef) + sum(phmmd$event))
 @
 
 \subsection{Fit auxiliary Poisson GLM}
@@ -119,15 +117,18 @@ fit.glm <- glm(m~-1+t+z1+z2+offset(log(N)),
   ppd, family=poisson)
 
 summary(fit.glm)
-fit.ph$coef
-logLik(fit.glm)
-logLik(fit.glm)[1] - sum(log(poisl))
+
+cbind(coxph.coef = fit.ph$coef, glm.coef = coef(fit.glm)[c('z1', 'z2')])
+cbind(coxph.pois.loglik, glm.loglik=logLik(fit.glm))
 @
 
 The additional parameter estimates correspond to the estimated log baseline hazard, which we verify using the basehaz() function.
 <<>>=
 bh <- basehaz(fit.ph, centered = FALSE)
-log(bh$hazard - c(0,bh$hazard[1:(length(bh$hazard)-1)]))[1:10]
+cbind(
+  coxph.bh.step = log(bh$hazard - c(0,bh$hazard[1:(length(bh$hazard)-1)]))[1:5],
+  glm.bh.step = coef(fit.glm)[1:5]
+)
 @
 
 \section{Extending to PHMM}
@@ -156,9 +157,8 @@ for(h in 1:length(eventtimes)){
 @
 Poisson likelihood:
 <<>>=
-sum(log(poisl))
-
-sum(log(poisl)) - fit.phmm$loglik[1]
+phmm.pois.loglik = sum(log(poisl))
+phmm.pois.loglik - fit.phmm$loglik[1]
 @
 Poisson degrees of freedom
 <<>>=
@@ -179,11 +179,14 @@ summary(fit.lmer)$coef
 fit.phmm$coef
 logLik(fit.lmer)
 
-sum(log(poisl)) - logLik(fit.lmer)[1]
+phmm.pois.loglik - logLik(fit.lmer)[1]
 @
 
 <<>>=
-log(fit.phmm$lambda)[1:10]
+cbind(
+  phmm.bh.step = log(fit.phmm$lambda)[1:5],
+  glm.bh.step = fixef(fit.lmer)[1:5]
+)
 @
 
 \end{document}
