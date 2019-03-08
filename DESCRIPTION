@@ -1,7 +1,7 @@
 Package: phmm
 Version: 0.7-11
 Date: 2019-03-05
-Title: Proportional Hazards Mixed-Effects Model (PHMM)
+Title: Proportional Hazards Mixed-Effects Model
 Authors@R: c(person(given="Michael", family="Donohue", role = c("aut", "cre"),
     email = "mdonohue@usc.edu"),
     person(given="Ronghui", family="Xu", role = "aut"))
@@ -17,7 +17,7 @@ Suggests:
     lme4 (>= 1.0)
 Description: Fits proportional hazards model incorporating random effects using
     an EM algorithm using Markov Chain Monte Carlo at E-step. Vaida and Xu (2000)
-    [DOI:10.1002/1097-0258(20001230)19:24<3309::AID-SIM825>3.0.CO;2-9].
+    <DOI:10.1002/1097-0258(20001230)19:24%3C3309::AID-SIM825%3E3.0.CO;2-9>.
 License: GPL-3
 Collate:
     'phmm-package.R'
