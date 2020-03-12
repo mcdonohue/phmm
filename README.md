@@ -14,6 +14,6 @@ install.packages("phmm")
 ## To install via github:
 
 ```r
-# install.packages('devtools')
-devtools::install_github("mcdonohue/phmm")
+# install.packages('remotes')
+remotes::install_github("mcdonohue/phmm")
 ```
