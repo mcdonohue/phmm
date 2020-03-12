@@ -29,6 +29,6 @@ fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
 
 test_that("phmm fit as expected", {
     expect_equal(fit.phmm$Sigma[1,1], 0.01018676, tolerance = .001)
-    expect_equal(fit.phmm$Sigma[2,2], 1.053641, tolerance = .001)
-    expect_equivalent(fit.phmm$coefficients, c(1.6102966, 0.5763816), tolerance = .001)
+    expect_equal(fit.phmm$Sigma[2,2], 1.053641, tolerance = .02)
+    expect_equivalent(fit.phmm$coefficients, c(1.6102966, 0.5763816), tolerance = .005)
 })

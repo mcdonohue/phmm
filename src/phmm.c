@@ -450,9 +450,9 @@ double logdens(double bb, void *para)
 {   /* the Gibbs E-step */
   struct dens_para *dpar;
   double y, sum=0, *alpha, *b;
-  int i, d, l, nreff;
+  int i, d, l;
   int *rank, *clust_start;
-  double *Lambexp, **ww, **a, **Sigma, **invSigma;
+  double *Lambexp, **ww, **a, **Sigma;
 
   dpar = para;
   i = dpar->i;   /* i = cluster */
@@ -465,8 +465,6 @@ double logdens(double bb, void *para)
   ww = dpar->ww;
   a = dpar->a;
   Sigma = dpar->Sigma;
-  nreff = dpar->nreff;
-  invSigma = dpar->invSigma;
 
   /*Rprintf("bb=%.4f\n", bb);*/
 

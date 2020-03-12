@@ -22,7 +22,6 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
   int ncov = *sncov;
   int nclust = *snclust;
 
-  double *b;
   double *Lambexp;
   double *lambda;
   int *delta;
@@ -43,7 +42,6 @@ void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sb
   float betahat[ncov+1];
   double **var;
   
-  b = (double *)R_alloc((nreff+1), sizeof(double));
   Lambexp = (double *)R_alloc((nobs+1), sizeof(double));
   lambda = (double *)R_alloc((nobs+1), sizeof(double));
   delta = (int *)R_alloc((nobs+1), sizeof(double));
@@ -177,8 +175,7 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   struct dens_para para;
   double myxinit[nreff+1][NINIT];
   double msbeta[ncov+1], mssigma2[nreff+1], mslambda[nobs+1];
-  double varLamb[nobs+1];
-  
+
   for (i=1;i<=ncov+nreff+nobs;i++) { 
     Iobs[i]= (double *)R_alloc((ncov+nreff+nobs+1),sizeof(double));
   }
@@ -186,8 +183,6 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   for (j=1; j<=nobs; j++){
     ebetaz[j] = exp(BetaZ(j, betahat, ncov, z)); 
   }   
-
-  varLamb[0] = 0;
 
   /* Initializations: */
   for (l=1; l<=nobs; l++){
