@@ -1,39 +1,20 @@
-\documentclass{article}
-\usepackage{mathpazo,amsmath,amsfonts,bm}
-\renewcommand{\sfdefault}{lmss}
-\renewcommand{\ttdefault}{lmtt}
-\usepackage[T1]{fontenc}
-\usepackage{geometry}
-\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
-\usepackage{url}
-\usepackage[authoryear]{natbib}
+---
+title: "Poisson GLM, Cox PH, & degrees of freedom"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Poisson GLM, Cox PH, & degrees of freedom}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 
-\makeatletter
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{Poisson GLM, Cox PH, \& degrees of freedom}
-%\usepackage[utf8]{inputenc}
-%\VignetteDepends{phmm}
+---
 
-\makeatother
+# Introduction
+We discuss connections between the Cox proportional hazards model and Poisson generalized linear models as described in Whitehead (1980). We fit comparable models to a sample dataset using `coxph()`, `glm()`, `phmm()`, and `glmer()` and explore similarities.
 
-\begin{document}
-
-\title{Poisson GLM, Cox PH, \& degrees of freedom}
-\author{Michael C. Donohue\\
-Alzheimer's Therapeutic Research Institute\\
-Keck School of Medicine\\
-University of Southern California}
-
-\maketitle
-
-\section{Introduction}
-We discuss connections between the Cox proportional hazards model and Poisson generalized linear models as described in Whitehead (1980). We fit comparable models to a sample dataset using \texttt{coxph()}, \texttt{glm()}, \texttt{phmm()}, and \texttt{glmer()} and explore similarities.
-
-\section{A simple Cox PH example}
-\subsection{Generate data}
+# A simple Cox PH example
+## Generate data
 We generate proportional hazards mixed model data.
-<<>>=
+```{r}
 options(width=75)
 library(phmm)
 
@@ -60,31 +41,33 @@ phmmd <- data.frame(Z)
 phmmd$cluster <- clusters
 phmmd$time <- time
 phmmd$event <- event
-@
+```
 
-\subsection{Fit the Cox PH model}
-<<>>=
+## Fit the Cox PH model
+```{r}
 fit.ph <- coxph(Surv(time, event) ~ Z1 + Z2, 
    phmmd, method="breslow", x=TRUE, y=TRUE)
 
 summary(fit.ph)
-@
+```
 
-%# cox partial likelihood
-%pl <- c()
-%for(h in 1:length(eventtimes)){
-%  js <- phmmd$time == eventtimes[h] # j star
-%  j  <- phmmd$time >= eventtimes[h]
-%  if(sum(js) > 1) stop("tied event times")
-%  pl <- c(pl, 
-%    exp(phmmd[js, "linear.predictors"])/
-%    sum(exp(phmmd[j, "linear.predictors"])))
-%}
+```{r, eval=FALSE, echo=FALSE}
+# cox partial likelihood
+pl <- c()
+for(h in 1:length(eventtimes)){
+  js <- phmmd$time == eventtimes[h] # j star
+  j  <- phmmd$time >= eventtimes[h]
+  if(sum(js) > 1) stop("tied event times")
+  pl <- c(pl, 
+    exp(phmmd[js, "linear.predictors"])/
+    sum(exp(phmmd[j, "linear.predictors"])))
+}
+```
 
-Next we create data to fit an auxilary Poisson model as described in Whitehead (1980) using the pseudoPoisPHMM() function provided in the phmm package. This function also extracts the linear predictors as estimated from the Cox PH model so that we can calculate likelihoods and degrees of freedom.
+Next we create data to fit an auxilary Poisson model as described in Whitehead (1980) using the `pseudoPoisPHMM()` function provided in the `phmm` package. This function also extracts the linear predictors as estimated from the Cox PH model so that we can calculate likelihoods and degrees of freedom.
 
-\subsection{Likelihood and degrees of freedom for Poisson GLM from Cox PH parameters}
-<<>>=
+## Likelihood and degrees of freedom for Poisson GLM from Cox PH parameters
+```{r}
 ppd <- as.data.frame(as.matrix(pseudoPoisPHMM(fit.ph)))
 
 # pois likelihood
@@ -98,20 +81,20 @@ for(h in 1:length(eventtimes)){
     ppd[js, "N"]*exp(-1)*exp(ppd[js, "linear.predictors"])/
     sum(ppd[j, "N"]*exp(ppd[j, "linear.predictors"])))
 }
-@
+```
 Poisson likelihood:
-<<>>=
+```{r}
 (coxph.pois.loglik = sum(log(poisl)))
 coxph.pois.loglik - fit.ph$loglik[2]
-@
+```
 Poisson degrees of freedom
-<<>>=
+```{r}
 (coxph.pois.df = length(fit.ph$coef) + sum(phmmd$event))
-@
+```
 
-\subsection{Fit auxiliary Poisson GLM}
+## Fit auxiliary Poisson GLM
 We fit an auxiliary Poisson GLM and note that the parameter estimates for z1 and z2 are identical to the coxph() fit, and the likelihood and degrees of freedom are as expected.
-<<>>=
+```{r}
 ppd$t <- as.factor(ppd$time)
 fit.glm <- glm(m~-1+t+z1+z2+offset(log(N)), 
   ppd, family=poisson)
@@ -120,28 +103,28 @@ summary(fit.glm)
 
 cbind(coxph.coef = fit.ph$coef, glm.coef = coef(fit.glm)[c('z1', 'z2')])
 cbind(coxph.pois.loglik, glm.loglik=logLik(fit.glm))
-@
+```
 
-The additional parameter estimates correspond to the estimated log baseline hazard, which we verify using the basehaz() function.
-<<>>=
+The additional parameter estimates correspond to the estimated log baseline hazard, which we verify using the `basehaz()` function.
+```{r}
 bh <- basehaz(fit.ph, centered = FALSE)
 cbind(
   coxph.bh.step = log(bh$hazard - c(0,bh$hazard[1:(length(bh$hazard)-1)]))[1:5],
   glm.bh.step = coef(fit.glm)[1:5]
 )
-@
+```
 
-\section{Extending to PHMM}
-\subsection{Fit PHMM}
-<<>>=
+# Extending to PHMM
+## Fit PHMM
+```{r}
 fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (Z1 + Z2|cluster), 
    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 summary(fit.phmm)
-@
+```
 
-\subsection{Likelihood and degrees of freedom for Poisson GLMM from PHMM parameters}
-<<>>=
+## Likelihood and degrees of freedom for Poisson GLMM from PHMM parameters
+```{r}
 ppd <- as.data.frame(as.matrix(pseudoPoisPHMM(fit.phmm)))
 
 poisl <- c()
@@ -154,21 +137,21 @@ for(h in 1:length(eventtimes)){
     ppd[js, "N"]*exp(-1)*exp(ppd[js, "linear.predictors"])/
     sum(ppd[j, "N"]*exp(ppd[j, "linear.predictors"])))
 }
-@
+```
 Poisson likelihood:
-<<>>=
+```{r}
 phmm.pois.loglik = sum(log(poisl))
 phmm.pois.loglik - fit.phmm$loglik[1]
-@
+```
 Poisson degrees of freedom
-<<>>=
+```{r}
 # Poisson GLMM degrees of freedom  length(unique(x$cluster)) * x$nrandom + x$nfixed
 traceHat(fit.phmm, "pseudoPois") # + 2*sum(phmmd$event)
-@
+```
 
-\subsection{Fit auxiliary Poisson GLMM}
+## Fit auxiliary Poisson GLMM
 We fit an auxiliary Poisson GLMM, although with a general variance-covariance matrix for the random effects (phmm() only fits models with diagonal variance-covariance matrix).
-<<message = FALSE, warning = FALSE>>=
+```{r, message = FALSE, warning = FALSE}
 library(lme4)
 ppd$t <- as.factor(ppd$time)
 fit.lmer <- glmer(m~-1+t+z1+z2+
@@ -180,13 +163,11 @@ fit.phmm$coef
 logLik(fit.lmer)
 
 phmm.pois.loglik - logLik(fit.lmer)[1]
-@
+```
 
-<<>>=
+```{r}
 cbind(
   phmm.bh.step = log(fit.phmm$lambda)[1:5],
   glm.bh.step = fixef(fit.lmer)[1:5]
 )
-@
-
-\end{document}
+```
