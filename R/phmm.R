@@ -71,7 +71,7 @@
 #' Royal Statistical Society}, Series B 1999; 61:265-285.
 #' @keywords survival
 #' @examples
-#' 
+#' \dontrun{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
 #' clusters <- rep(1:nclust,each=n/nclust)
@@ -100,7 +100,7 @@
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' summary(fit.phmm)
 #' plot(fit.phmm)
-#' 
+#' }
 #' @importFrom survival coxph Surv basehaz
 #' @export
 phmm <- function (formula, data, subset, 
@@ -368,7 +368,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' statistics, 29(3), 268-.
 #' @keywords survival
 #' @examples
-#' 
+#' \dontrun{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
 #' clusters <- rep(1:nclust,each=n/nclust)
@@ -417,7 +417,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' traceHat(fit.phmm)
 #' 
 #' summary(fit.lmer)
-#' 
+#' }
 #' @method AIC phmm
 #' @export
 AIC.phmm <- function(object, ..., k = 2){

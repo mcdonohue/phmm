@@ -33,7 +33,7 @@
 #' hazards mixed models. \emph{Biometrika}, 98, 3, 685-700.
 #' @keywords package
 #' @examples
-#' 
+#' \dontrun{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
 #' clusters <- rep(1:nclust,each=n/nclust)
@@ -61,7 +61,7 @@
 #'    phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
 #'    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 #' summary(fit.phmm)
-#' 
+#' }
 #' @useDynLib phmm
 NULL
 
