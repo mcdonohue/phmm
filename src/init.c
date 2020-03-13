@@ -1,6 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
-
+#include <R_ext/Rdynload.h>
 #include "phmm.h"
 
 static R_NativePrimitiveArgType phmm_t[]={REALSXP, REALSXP, REALSXP, INTSXP,
