@@ -25,10 +25,10 @@ phmmd$event <- event
 
 fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
     phmmd, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
-    NINIT = 10, MAXSTEP = 100, CONVERG=90)
+    NINIT = 10, MAXSTEP = 200, CONVERG=90)
 
 test_that("phmm fit as expected", {
-    expect_equal(fit.phmm$Sigma[1,1], 0.01018676, tolerance = .001)
-    expect_equal(fit.phmm$Sigma[2,2], 1.053641, tolerance = .02)
-    expect_equivalent(fit.phmm$coefficients, c(1.6102966, 0.5763816), tolerance = .005)
+    expect_equal(fit.phmm$Sigma[1,1], 0.005107908, tolerance = .001)
+    expect_equal(fit.phmm$Sigma[2,2], 1.057397, tolerance = .02)
+    expect_equivalent(fit.phmm$coefficients, c(1.6084942, 0.5784425), tolerance = .005)
 })

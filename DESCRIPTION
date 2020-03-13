@@ -1,6 +1,6 @@
 Package: phmm
-Version: 0.7-11
-Date: 2019-03-05
+Version: 0.7-12
+Date: 2020-03-13
 Title: Proportional Hazards Mixed-Effects Model
 Authors@R: c(person(given="Michael", family="Donohue", role = c("aut", "cre"),
     email = "mdonohue@usc.edu"),
