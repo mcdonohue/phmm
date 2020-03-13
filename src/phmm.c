@@ -13,7 +13,6 @@ z=covariates (fixed effect), w= r.eff. covariates */
 /*   xx, ddelta, zz, ww, cluster, rank are sorted by cluster */
 #include <R.h>
 #include <Rinternals.h>
-#include <R_ext/Rdynload.h>
 #include "phmm.h"
 #include "time.h"
 

@@ -2,7 +2,6 @@
 
 #include <R.h>
 #include <Rinternals.h>
-#include <R_ext/Rdynload.h>
 #include "phmm.h" 
 
 void sVar(int *sGbs, int *snobs, int *snreff, int *sncov, int *sNINIT, float *sbetahat,

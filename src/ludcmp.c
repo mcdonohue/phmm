@@ -1,6 +1,6 @@
-#include <math.h>
-#define NRANSI
 #include <R.h>
+#include <Rinternals.h>
+#define NRANSI
 #define TINY 1.0e-20;
 
 void ludcmp(float **a, int n, int *indx, float *d)

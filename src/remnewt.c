@@ -1,6 +1,6 @@
-#include <math.h>
+#include <R.h>
+#include <Rinternals.h>
 #define NRANSI
-#include "R.h"
 #include "phmm.h"
 
 void mnewt(int n, int ntrial, float *x, float tolx, float tolf,

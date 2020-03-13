@@ -1,4 +1,5 @@
-#include <math.h>
+#include <R.h>
+#include <Rinternals.h>
 
 float gasdev(long *idum)
 {
