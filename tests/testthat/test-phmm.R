@@ -5,6 +5,6 @@ fit.phmm <- phmm(Surv(time, status) ~ age + (1|inst),
   NINIT = 10, MAXSTEP = 100, CONVERG=90)
 
 test_that("phmm with random intercept as expected", {
-    expect_equivalent(fit.phmm$Sigma, 0.004059414, tolerance = .001)
+    expect_equivalent(fit.phmm$Sigma, 0.004059414, tolerance = .002)
     expect_equivalent(fit.phmm$coefficients, 0.0187804, tolerance = .01)
 })
