@@ -169,3 +169,14 @@ cbind(
   glm.bh.step = fixef(fit.lmer)[1:5]
 )
 ```
+
+## Test
+```{r}
+fit.phmm <- phmm(Surv(time, status) ~ age + (1|inst),
+  data=survival::lung, Gbs = 100, Gbsvar = 1000, VARSTART = 1,
+  NINIT = 10, MAXSTEP = 100, CONVERG=90)
+
+fit.phmm$coefficients
+```
+
+
