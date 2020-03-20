@@ -74,16 +74,16 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   double *sumb[nreff+1], *sumbb[nreff+1], *sumv[nreff+1][nreff+1];
   float betahat[ncov+1];
 	
-  xx= (double *)R_alloc((nobs+1), sizeof(double));
-  Lambexp= (double *)R_alloc((nobs+1), sizeof(double));
-  omega= (double *)R_alloc((nobs+1), sizeof(double));
+  xx= (double *)R_alloc((nobs+1), sizeof(double *));
+  Lambexp= (double *)R_alloc((nobs+1), sizeof(double *));
+  omega= (double *)R_alloc((nobs+1), sizeof(double *));
   for (i=1;i<=ncov;i++) {
-    z[i]= (double *)R_alloc((nobs+1), sizeof(double));
-    zz[i]= (double *)R_alloc((nobs+1), sizeof(double));
+    z[i]= (double *)R_alloc((nobs+1), sizeof(double *));
+    zz[i]= (double *)R_alloc((nobs+1), sizeof(double *));
   }
   for (i=1;i<=nreff;i++) {
-    w[i]= (double *)R_alloc((nobs+1), sizeof(double));
-    ww[i]= (double *)R_alloc((nobs+1), sizeof(double));
+    w[i]= (double *)R_alloc((nobs+1), sizeof(double *));
+    ww[i]= (double *)R_alloc((nobs+1), sizeof(double *));
   }
 	
   ddelta= (int *)R_alloc((nobs+1), sizeof(int));
@@ -113,20 +113,26 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   z[1][i], z[2][i], z[3][i], z[4][i], z[5][i], 
   w[1][i]);*/
 	
-  sum0= (double *)R_alloc((nobs+2), sizeof(double));
+  sum0= (double *)R_alloc((nobs+2), sizeof(double *));
   for (i=1;i<=ncov;i++) {
-    sum1[i]= (double *)R_alloc((nobs+2), sizeof(double));
+    sum1[i]= (double *)R_alloc((nobs+2), sizeof(double *));
     for (j=1;j<=ncov;j++)
-    	sum2[i][j]= (double *)R_alloc((nobs+2), sizeof(double));
+    	sum2[i][j]= (double *)R_alloc((nobs+2), sizeof(double *));
   }
 	
-  sum0[nobs+1]=0;   /* set all sums to 0 */
+	/* set all sums to 0 */
+	for (i=0;i<=nobs+2;i++) {
+	  sum0[i]=0;
+	}
   for (i=1;i<=ncov;i++) {
     sum1[i][nobs+1]=0;
     for (j=1;j<=ncov;j++)
     	sum2[i][j][nobs+1]=0;
   }
   Lambda[0]=0;
+  for (i=0;i<=nobs+1;i++) {
+    rank[i]=0;
+  }
 	
   /* Sort data: */
 	Sort( nobs, x, delta, cluster, ncov, z, nreff, w );
@@ -137,8 +143,8 @@ void phmm(double *x, double *zv, double *wv, int *delta,
 	
   clust_start= (int *)R_alloc((nclust+2),sizeof(int));
   for (i=1;i<=nreff;i++) {
-    B[i]= (double *)R_alloc((nclust+1),sizeof(double));
-    a[i]= (double *)R_alloc((nclust+1),sizeof(double));
+    B[i]= (double *)R_alloc((nclust+1),sizeof(double *));
+    a[i]= (double *)R_alloc((nclust+1),sizeof(double *));
   }
   clust_start[1]=1;
   for (i=1; i<=nclust; i++) {
@@ -157,19 +163,19 @@ void phmm(double *x, double *zv, double *wv, int *delta,
   invSigma = dmatrix2(sinvSigma, nreff+1, nreff+1);
   var = dmatrix2(svar, ncov+nreff+nobs+1, ncov+nreff+nobs+1);
 	
-	detcondv= (double *)R_alloc((nclust+1),sizeof(double));
+	detcondv= (double *)R_alloc((nclust+1),sizeof(double *));
   for (i=1;i<=nreff;i++) {
-    sumb[i]= (double *)R_alloc((nclust+1),sizeof(double));
-    sumbb[i]= (double *)R_alloc((nclust+1),sizeof(double));
-    eb[i]= (double *)R_alloc((nclust+1),sizeof(double));
-    v[i]= (double *)R_alloc((nclust+1),sizeof(double));
+    sumb[i]= (double *)R_alloc((nclust+1),sizeof(double *));
+    sumbb[i]= (double *)R_alloc((nclust+1),sizeof(double *));
+    eb[i]= (double *)R_alloc((nclust+1),sizeof(double *));
+    v[i]= (double *)R_alloc((nclust+1),sizeof(double *));
     for (j=1;j<=nreff;j++) {
-    	sumv[i][j]= (double *)R_alloc((nclust+1),sizeof(double));
-    	condvar[i][j]= (double *)R_alloc((nclust+1),sizeof(double));
-    	invcondv[i][j]= (double *)R_alloc((nclust+1),sizeof(double));
+    	sumv[i][j]= (double *)R_alloc((nclust+1),sizeof(double *));
+    	condvar[i][j]= (double *)R_alloc((nclust+1),sizeof(double *));
+    	invcondv[i][j]= (double *)R_alloc((nclust+1),sizeof(double *));
     }
   }
-	laplace= (double *)R_alloc((nclust+1),sizeof(double));
+	laplace= (double *)R_alloc((nclust+1),sizeof(double *));
 	
   /* EM iterative algorithm: */
   EM( ncov, nreff, Sigma, nobs, omega,
@@ -481,8 +487,8 @@ void Estep(int ncov, int nreff, double *Sigma[nreff+1], int nobs, int NINIT, int
   double *v[nreff+1], double *condvar[nreff+1][nreff+1],
   double detSigma, int varcov)
 {
-	int i, l, d, in, dd;
-	int err, ninit = 4, dometrop = 0,  npoint = 100, ncent = 0,
+	int i, l, d, in, dd, g;
+	int err = 0, dometrop = 0,  npoint = 100, ncent = 0,
   neval, nsamp=1;
 	double xl = -100.0, xr = 100.0, xprev = 0.0, xsamp,
   xcent, qcent, convex = 1., temp;
@@ -491,22 +497,25 @@ void Estep(int ncov, int nreff, double *Sigma[nreff+1], int nobs, int NINIT, int
 	double myxinit[nreff+1][NINIT];
 	double *vtemp[nreff+1];
 	
-	for (d=1;d<=nreff;d++)
-  vtemp[d]= (double *)R_alloc((nreff+1),sizeof(double));
+	for (d=1;d<=nreff+1;d++)
+  vtemp[d]= (double *)R_alloc((nreff+1),sizeof(double *));
 	
 	/* Initializations: */
-	for (l=1; l<=nobs; l++)   oomega[l] = 0;
-	for (d=1; d<=nreff; d++)   sum[d]=0;
+	for (l=0; l<=nobs+2; l++)   oomega[l] = 0;
+	for (d=0; d<=nreff+2; d++)   sum[d]=0;
 	for (d=1; d<=nreff; d++)
-  for (i=1; i<=nclust; i++){
+  for (i=1; i<=nclust+1; i++){
   	sumb[d][i] = sumbb[d][i] = 0;
   	/* sumb for E(b^2) and sumbb for E(b) */
   	for (dd=1; dd<=nreff; dd++)  sumv[d][dd][i] = 0;
   }
-  	
-  	/* Gibbs sampler: */  	
-  	{
-  register int i, d, g;
+  for (d=0; d<=nreff+2; d++)
+  for (i=0; i<=NINIT+1; i++){
+      myxinit[d][i] = 0;
+  }
+  
+  /* Gibbs sampler: */  	
+  {
   for (i=1; i<=nclust; i++) {
   for (d=1; d<=nreff; d++)
   b[d] = B[d][i];
@@ -535,12 +544,17 @@ void Estep(int ncov, int nreff, double *Sigma[nreff+1], int nobs, int NINIT, int
   xr = 10 * sqrt(Sigma[d][d]);
   xl = -xr;
   /* THIS IS A SENSITIVE SPOT! */
-  for(in = 0; in < ninit; in++)
-  myxinit[d][in] = sqrt(Sigma[d][d]) *
-  (in +.5 - ninit*.5);
+  for(in = 0; in < NINIT+1; in++)
+    myxinit[d][in] = sqrt(Sigma[d][d]) * (in +.5 - NINIT*.5);
   
   /* sample current r.eff element using ARS: */
-  err = arms(myxinit[d], ninit, &xl, &xr, logdens, &para,
+  err = arms(
+    myxinit[d], 
+    NINIT, 
+    &xl, 
+    &xr, 
+    logdens, 
+    &para,
   &convex, npoint, dometrop, &xprev, &xsamp, nsamp,
   &qcent, &xcent, ncent, &neval);
   
@@ -735,9 +749,9 @@ double Laplace(int nreff, int ncov, int nclust, double *condvar[nreff+1][nreff+1
 	int i, d, dd;
 	double *vtemp[nreff+1], *vtemp1[nreff+1], temp1[nreff+1];
 	
-	for (d=1;d<=nreff;d++) {
-  vtemp[d]= (double *)R_alloc((nreff+1),sizeof(double));
-  vtemp1[d]= (double *)R_alloc((nreff+1),sizeof(double));
+	for (d=1;d<=nreff+1;d++) {
+  vtemp[d]= (double *)R_alloc((nreff+1),sizeof(double *));
+  vtemp1[d]= (double *)R_alloc((nreff+1),sizeof(double *));
 	}
 	
 	double laplacetot;
@@ -795,7 +809,7 @@ double Importance(int ncov, int nreff, double *Sigma[nreff+1],
 {
 	int g, i, d, dd, l, in;
 	double incrA, logratio, incrC, temp;
-	int err, ninit = 4, dometrop = 0,  npoint = 100, ncent = 0, neval, nsamp=1;
+	int err, dometrop = 0,  npoint = 100, ncent = 0, neval, nsamp=1;
 	double xl, xr, xprev = 0.0, xsamp, xcent, qcent, convex = 1.;
 	double b[nreff+1], alpha[nobs+1];
 	struct dens_para para;
@@ -840,12 +854,11 @@ double Importance(int ncov, int nreff, double *Sigma[nreff+1],
   xr = 10 * sqrt(Sigma[d][d]);
   xl = -xr;
   /* THIS IS A SENSITIVE SPOT! */
-  for(in = 0; in < ninit; in++) 
-  myxinit[d][in] = sqrt(Sigma[d][d]) * 
-  (in +.5 - ninit*.5);
+  for(in = 0; in < NINIT+1; in++) 
+    myxinit[d][in] = sqrt(Sigma[d][d]) * (in +.5 - NINIT*.5);
   
   /* sample current r.eff element using ARS: */
-  err = arms(myxinit[d], ninit, &xl, &xr, logdens, &para,
+  err = arms(myxinit[d], NINIT, &xl, &xr, logdens, &para,
   &convex, npoint, dometrop, &xprev, &xsamp, nsamp,
   &qcent, &xcent, ncent, &neval);
   
@@ -910,8 +923,8 @@ double Invmatrix ( double **a, int N, int M, double **y )
 
 double **dmatrix2(double *array, int ncol, int nrow)
 {
-  register int i;
-  register double **pointer;
+  int i;
+  double **pointer;
 	
   pointer = (double **)R_alloc(nrow, sizeof(double *));
   for (i=0; i<nrow; i++) {

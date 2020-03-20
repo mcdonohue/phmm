@@ -12,7 +12,3 @@ int arms (double *xinit, int ninit, double *xl, double *xr,
          int *neval);
 
 double expshift(double y, double y0);
-
-#define YCEIL 50.                /* maximum y avoiding overflow in exp(y) */
-
-

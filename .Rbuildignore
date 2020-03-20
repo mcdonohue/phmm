@@ -12,3 +12,4 @@ Makefile
 ^.*\.Rproj$
 \.travis\.yml
 ^\.Rproj\.user$
+^cran-comments\.md$

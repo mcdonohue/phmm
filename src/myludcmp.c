@@ -1,7 +1,7 @@
 #include <R.h>
 #include <Rinternals.h>
 #define NRANSI
-#define TINY 1.0e-20;
+#define TINY 1.0e-20
 
 void myludcmp(double **a, int n, int *indx, double *d)
 {
@@ -9,7 +9,7 @@ void myludcmp(double **a, int n, int *indx, double *d)
 	double big,dum,sum,temp;
 	double *vv;
 
-	vv=(double *)R_alloc(n,sizeof(double));
+	vv=(double *)R_alloc(n+1,sizeof(double *));
 	*d=1.0;
 	for (i=1;i<=n;i++) {
 		big=0.0;

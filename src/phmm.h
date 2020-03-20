@@ -36,9 +36,7 @@ void phmm(double *x, double *zv, double *wv, int *delta,
 
 struct dens_para {  /* used in logdens() */
   int i, d, *rank, *clust_start, nreff;
-
   double *alpha, *b, *Lambexp, **ww, **a, **Sigma, **invSigma;
-
 };
 
 void mnewt(int n, int ntrial, float *x, float tolx, float tolf,
