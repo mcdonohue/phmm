@@ -6,7 +6,7 @@ fit.phmm <- phmm(Surv(time, status) ~ age + (1|inst),
   NINIT = 10, MAXSTEP = 100, CONVERG=90)
 
 test_that("phmm with random intercept as expected", {
-    expect_equivalent(fit.phmm$coefficients, 0.01877795, tolerance = .001)
+    expect_equivalent(fit.phmm$coefficients, 0.01877795, tolerance = .005)
 })
 
 # coxph(Surv(time, status) ~ age + frailty(inst, df=4), lung)

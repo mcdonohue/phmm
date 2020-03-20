@@ -1,7 +1,6 @@
 ## Test environments
 * x86_64-apple-darwin15.6.0 (64-bit), R 3.6.2
 * Debian Linux, R-devel, GCC (rhub)
-* win-builder (devel and release)
 
 ## R CMD check results
 

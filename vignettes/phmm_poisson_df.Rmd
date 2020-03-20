@@ -5,7 +5,6 @@ vignette: >
   %\VignetteIndexEntry{Poisson GLM, Cox PH, & degrees of freedom}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-
 ---
 
 # Introduction
@@ -14,8 +13,7 @@ We discuss connections between the Cox proportional hazards model and Poisson ge
 # A simple Cox PH example
 ## Generate data
 We generate proportional hazards mixed model data.
-```{r}
-options(width=75)
+```{r, message=FALSE}
 library(phmm)
 
 n <- 50      # total sample size

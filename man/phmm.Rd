@@ -118,31 +118,6 @@ fit.phmm <- phmm(Surv(time, event) ~ Z1 + Z2 + (-1 + Z1 + Z2 | cluster),
    NINIT = 10, MAXSTEP = 100, CONVERG=90)
 summary(fit.phmm)
 plot(fit.phmm)
-
-# Same data can be fit with glmer,
-# though the correlation structures are different.
-poisphmmd <- pseudoPoisPHMM(fit.phmm)
-
-library(lme4)
-fit.lmer <- glmer(m~-1+as.factor(time)+z1+z2+
-  (-1+w1+w2|cluster)+offset(log(N)),
-  as.data.frame(as(poisphmmd, "matrix")), family=poisson, nAGQ=0)
-
-fixef(fit.lmer)[c("z1","z2")]
-fit.phmm$coef
-
-VarCorr(fit.lmer)$cluster
-fit.phmm$Sigma
-
-logLik(fit.lmer)
-fit.phmm$loglik
-
-traceHat(fit.phmm)
-
-summary(fit.lmer)
-
-traceHat(fit.phmm)
-
 }
 }
 \references{

@@ -8,3 +8,4 @@ src/*.dll
 *.tex
 *.log
 *.gz
+inst/doc

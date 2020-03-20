@@ -14,6 +14,7 @@ VignetteBuilder: knitr
 URL: https://github.com/mcdonohue/phmm
 Suggests:
     knitr,
+    rmarkdown,
     lme4 (>= 1.0),
     testthat
 Description: Fits proportional hazards model incorporating random effects using
