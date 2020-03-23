@@ -163,7 +163,7 @@ void Var(int Gbs, int nobs, int nreff, int ncov, int NINIT, float *betahat,
   double **zz, int *delta, int *ddelta, double *omega, double **z,
   double **var) 
 {
-  int g, i, d, j, l, nfail, dd, fail[nobs+1], in;
+  int g, i, d, j, l, nfail=0, dd, fail[nobs+1], in;
   double ooomega[nobs+1], ebetaz[nobs+1], sum[nreff+1];
   double sbeta[ncov+1], ssigma2[nreff+1], slambda[nobs+1], ssum0, ssum1;
   double *Iobs[ncov+nreff+nobs+1];

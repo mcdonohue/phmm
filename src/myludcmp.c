@@ -5,7 +5,7 @@
 
 void myludcmp(double **a, int n, int *indx, double *d)
 {
-	int i,imax,j,k;
+	int i,imax=0,j,k;
 	double big,dum,sum,temp;
 	double *vv;
 

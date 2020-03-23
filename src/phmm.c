@@ -243,7 +243,7 @@ void Clust(int nobs, int *rank, double *xx, double *x, int *ddelta, int *delta,
   /* xx, ddelta, cluster, rank, zz, ww are sorted by clusters */
 {
 	double temp1;
-	int temp2, i, j, d, k, flag;
+	int temp2, i, j, d, k, flag=0;
 	int nclust = *pnclust;
 	
 	for (i=1; i<=nobs; i++) {
@@ -641,7 +641,7 @@ void Likelihood(int ncov, int nreff, double *Sigma[nreff+1],
   double *plbridge, double *laplacetot, double *bridgeC, double *invcondv[nreff+1][nreff+1], 
   double *detcondv, double *laplace)
 {
-	double incrB, logratio, uu[3], temp;
+	double incrB, logratio=0.0, uu[3], temp;
 	int i, g, d, dd;
 	long idum[1]={-10};
 	double lbridge = *plbridge;

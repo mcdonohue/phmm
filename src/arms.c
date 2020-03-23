@@ -462,7 +462,7 @@ int test(ENVELOPE *env, POINT *p, FUNBAG *lpdf, METROPOLIS *metrop)
 
 {
   double u,y,ysqueez,ynew,yold,znew,zold,w;
-  POINT *ql,*qr;
+  POINT *ql=0,*qr=0;
   
   /* for rejection test */
   GetRNGstate();
@@ -698,8 +698,8 @@ int meet (POINT *q, ENVELOPE *env, METROPOLIS *metrop)
 /* *metrop   : for metropolis step */
 
 {
-  double gl,gr,grl,dl,dr;
-  int il,ir,irl;
+  double gl=0.0,gr=0.0,grl=0.0,dl=0.0,dr=0.0;
+  int il=0,ir=0,irl=0;
 
   if(q->f){
     /* this is not an intersection point */
