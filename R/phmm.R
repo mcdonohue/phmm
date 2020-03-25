@@ -71,7 +71,7 @@
 #' Royal Statistical Society}, Series B 1999; 61:265-285.
 #' @keywords survival
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
 #' clusters <- rep(1:nclust,each=n/nclust)
@@ -368,7 +368,7 @@ phmm.cond.loglik <- function(time, delta, z, beta, w, b){
 #' statistics, 29(3), 268-.
 #' @keywords survival
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' n <- 50      # total sample size
 #' nclust <- 5  # number of clusters
 #' clusters <- rep(1:nclust,each=n/nclust)

@@ -20,7 +20,7 @@ software.
 }
 \examples{
 
-\dontrun{
+\donttest{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
 clusters <- rep(1:nclust,each=n/nclust)

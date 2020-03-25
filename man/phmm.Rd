@@ -89,7 +89,7 @@ implemented. It is advised to plot the estimates at each iteration using the
 Booth and Hobart (1999).
 }
 \examples{
-\dontrun{
+\donttest{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
 clusters <- rep(1:nclust,each=n/nclust)

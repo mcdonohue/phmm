@@ -25,7 +25,7 @@ pseudoPoisPHMM Pseudo poisson data for fitting PHMM via GLMM traceHat Trace
 of the "hat" matrix from PHMM-MCEM fit }
 }
 \examples{
-\dontrun{
+\donttest{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
 clusters <- rep(1:nclust,each=n/nclust)

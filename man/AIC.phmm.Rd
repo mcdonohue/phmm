@@ -30,7 +30,7 @@ importance sampling, and bridge sampling (only implemented for nreff < 3).
 The default k = 2, is for the usual AIC.
 }
 \examples{
-\dontrun{
+\donttest{
 n <- 50      # total sample size
 nclust <- 5  # number of clusters
 clusters <- rep(1:nclust,each=n/nclust)
